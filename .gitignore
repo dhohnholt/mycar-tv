@@ -2,3 +2,6 @@ build/
 *.xcuserstate
 xcuserdata/
 .DS_Store
+
+# Apple documentation (copyrighted, local reference only)
+docs/*.pdf
