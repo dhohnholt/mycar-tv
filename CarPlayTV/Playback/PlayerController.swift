@@ -3,39 +3,30 @@ import Combine
 import MediaPlayer
 import UIKit
 
-/// Single source of truth for what's playing. Video goes to the CarPlay window when the car is
-/// connected, otherwise to the phone's full-screen player.
+/// Single source of truth for what's playing. On the phone, video shows in the full-screen player.
+/// In the car, iOS presents video on the CarPlay display over AirPlay when the car allows it, and
+/// otherwise shows Now Playing, so the app never draws on the car screen itself.
 @MainActor
 final class PlayerController: ObservableObject {
     static let shared = PlayerController()
 
-    enum SurfaceRole { case phone, car }
-
     @Published private(set) var current: MediaItem?
     @Published private(set) var isPlaying = false
-    @Published private(set) var drivingLocked = false
     @Published var phonePlayerPresented = false
 
-    /// Car screen only: zoom video to fill the display instead of letterboxing it.
-    @Published var carFullScreen = false {
-        didSet { carSurface?.fillsScreen = carFullScreen }
-    }
+    /// Set by the CarPlay scene. While connected, starting playback doesn't open the phone player.
+    @Published var carConnected = false
 
-    @Published var carConnected = false {
-        didSet {
-            refreshDrivingMonitor()
-            applyDrivingLock()
-            refreshSurfaces()
-        }
-    }
+    let avPlayer: AVPlayer = {
+        let player = AVPlayer()
+        // CarPlay video apps must support AirPlay video; this is how video reaches the car display.
+        player.allowsExternalPlayback = true
+        return player
+    }()
 
-    let avPlayer = AVPlayer()
     private let youtube = YouTubePlayerView()
     private weak var phoneSurface: VideoSurfaceView?
-    private weak var carSurface: VideoSurfaceView?
     private var cancellables: Set<AnyCancellable> = []
-
-    private var speedLockEnabled: Bool { UserDefaults.standard.bool(forKey: AppSettings.speedLockKey) }
 
     private init() {
         youtube.onStateChange = { [weak self] state in
@@ -52,10 +43,9 @@ final class PlayerController: ObservableObject {
             }
             .store(in: &cancellables)
 
-        DrivingMonitor.shared.$isMoving
+        $isPlaying
             .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in MainActor.assumeIsolated { self?.applyDrivingLock() } }
+            .sink { [weak self] playing in MainActor.assumeIsolated { self?.updateNowPlayingRate(playing) } }
             .store(in: &cancellables)
 
         setUpRemoteCommands()
@@ -76,16 +66,15 @@ final class PlayerController: ObservableObject {
         switch item {
         case .stream(let channel):
             avPlayer.replaceCurrentItem(with: AVPlayerItem(url: channel.streamURL))
-            if !drivingLocked { avPlayer.play() }
+            avPlayer.play()
         case .youtube(let video):
-            youtube.load(videoID: video.id, autoplay: !drivingLocked)
+            youtube.load(videoID: video.id, autoplay: true)
         }
-        refreshSurfaces()
+        refreshSurface()
         updateNowPlaying()
     }
 
     func resume() {
-        guard !drivingLocked else { return }
         switch current {
         case .stream: avPlayer.play()
         case .youtube: youtube.play()
@@ -110,7 +99,7 @@ final class PlayerController: ObservableObject {
         current = nil
         isPlaying = false
         phonePlayerPresented = false
-        refreshSurfaces()
+        refreshSurface()
         updateNowPlaying()
     }
 
@@ -119,63 +108,39 @@ final class PlayerController: ObservableObject {
         youtube.stop()
     }
 
-    // MARK: Surfaces
+    // MARK: Phone surface
 
-    func register(_ surface: VideoSurfaceView, as role: SurfaceRole) {
-        switch role {
-        case .phone: phoneSurface = surface
-        case .car:
-            carSurface = surface
-            surface.fillsScreen = carFullScreen
-        }
-        refreshSurfaces()
+    func register(_ surface: VideoSurfaceView) {
+        phoneSurface = surface
+        refreshSurface()
     }
 
     func unregister(_ surface: VideoSurfaceView) {
         if phoneSurface === surface { phoneSurface = nil }
-        if carSurface === surface { carSurface = nil }
-        refreshSurfaces()
+        refreshSurface()
     }
 
-    private func refreshSurfaces() {
-        let active = (carConnected ? carSurface : nil) ?? phoneSurface
-
-        for surface in [phoneSurface, carSurface].compactMap({ $0 }) {
-            let isActive = surface === active
-            if case .stream = current, isActive {
-                surface.playerLayer.player = avPlayer
-            } else {
-                surface.playerLayer.player = nil
-            }
+    /// The YouTube player is kept alive in a hidden host while the phone player is closed, so its
+    /// audio (and AirPlay video) keeps going.
+    private func refreshSurface() {
+        if case .stream = current {
+            phoneSurface?.playerLayer.player = avPlayer
+        } else {
+            phoneSurface?.playerLayer.player = nil
         }
 
-        if case .youtube = current, let active {
-            active.embed(youtube)
+        if case .youtube = current {
+            if let phoneSurface {
+                phoneSurface.embed(youtube)
+            } else {
+                BackgroundHost.shared.embed(youtube)
+            }
         } else {
             youtube.removeFromSuperview()
         }
-
-        carSurface?.message = drivingLocked
-            ? "Paused while the vehicle is moving"
-            : (current == nil ? "Choose TV, Movies or YouTube above" : nil)
-        phoneSurface?.message = (carConnected && carSurface != nil && current != nil) ? "Playing on CarPlay" : nil
     }
 
-    // MARK: Driving lock
-
-    func refreshDrivingMonitor() {
-        DrivingMonitor.shared.setActive(carConnected && speedLockEnabled)
-    }
-
-    func applyDrivingLock() {
-        let locked = carConnected && speedLockEnabled && DrivingMonitor.shared.isMoving
-        guard locked != drivingLocked else { return }
-        drivingLocked = locked
-        if locked { pause() }
-        refreshSurfaces()
-    }
-
-    // MARK: Now Playing / steering-wheel buttons
+    // MARK: Now Playing / CarPlay and steering-wheel controls
 
     private func setUpRemoteCommands() {
         let center = MPRemoteCommandCenter.shared()
@@ -191,6 +156,10 @@ final class PlayerController: ObservableObject {
             MainActor.assumeIsolated { self?.togglePlayPause() }
             return .success
         }
+        center.stopCommand.addTarget { [weak self] _ in
+            MainActor.assumeIsolated { self?.stop() }
+            return .success
+        }
     }
 
     private func updateNowPlaying() {
@@ -199,7 +168,43 @@ final class PlayerController: ObservableObject {
                 MPMediaItemPropertyTitle: item.title,
                 MPMediaItemPropertyArtist: item.subtitle,
                 MPNowPlayingInfoPropertyIsLiveStream: item.isLive,
+                MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.video.rawValue,
+                MPNowPlayingInfoPropertyPlaybackRate: 1.0,
             ]
         }
+    }
+
+    private func updateNowPlayingRate(_ playing: Bool) {
+        guard var info = MPNowPlayingInfoCenter.default().nowPlayingInfo else { return }
+        info[MPNowPlayingInfoPropertyPlaybackRate] = playing ? 1.0 : 0.0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        MPNowPlayingInfoCenter.default().playbackState = playing ? .playing : .paused
+    }
+}
+
+/// An offscreen-but-attached view for the YouTube player when no phone player is open. A WKWebView
+/// must stay in a window to keep playing.
+@MainActor
+private final class BackgroundHost {
+    static let shared = BackgroundHost()
+
+    private var container: UIView?
+
+    func embed(_ view: UIView) {
+        guard let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow) else { return }
+        if container?.window !== window {
+            let host = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 180))
+            host.isUserInteractionEnabled = false
+            host.alpha = 0.01
+            window.insertSubview(host, at: 0)
+            container = host
+        }
+        guard let container, view.superview !== container else { return }
+        view.removeFromSuperview()
+        view.frame = container.bounds
+        container.addSubview(view)
     }
 }

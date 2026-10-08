@@ -7,8 +7,8 @@ settings:
   base:
     DEVELOPMENT_TEAM: 6BA6YTBG7Z
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "2"
 targets:
   CarPlayTV:
     type: application
@@ -30,14 +30,15 @@ targets:
       path: CarPlayTV/Info.plist
       properties:
         CFBundleDisplayName: Car TV
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         GoogleClientID: $(GOOGLE_CLIENT_ID)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        UIBackgroundModes: [audio, location]
-        NSLocationWhenInUseUsageDescription: Car TV uses your speed to pause video on the CarPlay screen while the vehicle is moving.
+        UIBackgroundModes: [audio]
         ITSAppUsesNonExemptEncryption: false
         NSAppTransportSecurity:
           # Most IPTV providers only serve plain HTTP.

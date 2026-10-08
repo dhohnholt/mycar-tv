@@ -3,9 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var library: LibraryStore
     @EnvironmentObject private var auth: GoogleAuth
-    @ObservedObject private var driving = DrivingMonitor.shared
     @ObservedObject private var history = HistoryStore.shared
-    @AppStorage(AppSettings.speedLockKey) private var speedLock = true
 
     @State private var newPlaylist = ""
     @State private var server = ""
@@ -20,7 +18,6 @@ struct SettingsView: View {
                 xtreamSection
                 librarySection
                 youTubeSection
-                safetySection
                 Section("Privacy") {
                     Text("Playlists, logins, YouTube tokens and watch history are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
                         .font(.footnote)
@@ -119,25 +116,6 @@ struct SettingsView: View {
             if let authError {
                 Text(authError).font(.footnote).foregroundStyle(.red)
             }
-        }
-    }
-
-    private var safetySection: some View {
-        Section {
-            Toggle("Pause car-screen video while moving", isOn: $speedLock)
-                .onChange(of: speedLock) {
-                    PlayerController.shared.refreshDrivingMonitor()
-                    PlayerController.shared.applyDrivingLock()
-                }
-            if speedLock && !driving.isAuthorized {
-                Text("Location access is off, so the app can't tell when you're moving. Turn it on in iOS Settings.")
-                    .font(.footnote)
-                    .foregroundStyle(.orange)
-            }
-        } header: {
-            Text("Safety")
-        } footer: {
-            Text("Uses GPS speed while CarPlay is connected. Video on the phone itself is never paused, so passengers can keep watching.")
         }
     }
 

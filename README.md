@@ -5,7 +5,7 @@ A private IPTV + YouTube player for the CarPlay screen. Distributed to yourself 
 - **IPTV:** M3U/M3U8 playlists and Xtream Codes logins (live TV + movies).
 - **YouTube:** sign in with Google; search, Liked videos, Subscriptions and Playlists on the car screen.
 - **Privacy:** credentials and tokens live only in the iPhone Keychain (`ThisDeviceOnly`, no iCloud/backup). No analytics, no third-party SDKs, ephemeral networking (no disk cache).
-- **Safety:** car-screen video pauses (and is covered) when GPS speed passes ~5 mph. Can be turned off in Settings.
+- **Safety:** iOS decides when video may show on the car display (typically only while parked).
 
 ## Project
 
@@ -39,13 +39,19 @@ Notes:
 - Quota is 10,000 units/day. A search costs 100 units, so about 100 searches a day. Browsing lists costs 1 unit per page.
 - Playback uses YouTube's official embedded player, so ads may appear and YouTube Premium perks don't carry over. Some videos block embedding and won't play.
 
-## 2. CarPlay entitlement (Apple)
+## 2. CarPlay video entitlement (Apple)
 
-Video on the car screen relies on the **CarPlay navigation** entitlement (`com.apple.developer.carplay-maps`). It gives the app a full window to draw video into.
+Car TV is a **CarPlay video app** (`com.apple.developer.carplay-video`, iOS 27+). It uses only system
+templates (tab bar, lists, search, Now Playing). List rows carry a `CPPlaybackConfiguration` with
+`preferredPresentation: .video`, and iOS presents the video on the car display over AirPlay when the car
+allows it (otherwise Now Playing). The app never draws on the car screen itself.
 
-- **Simulator:** works now, no approval needed. Run the app, then in Simulator choose **I/O → External Displays → CarPlay**.
-- **Real iPhone/car:** request the entitlement at <https://developer.apple.com/contact/carplay/>. Once Apple adds it to your team, add the CarPlay capability to the App ID in the developer portal. Automatic signing then picks it up.
-- Until it's granted, device builds fail to sign. To test the phone-only parts on your iPhone first, temporarily delete the key from `CarPlayTV/CarPlayTV.entitlements`.
+- Requested from Apple as app type VIDEO, Case-ID 22734816.
+- **Build with Xcode 27** (iOS 27 SDK), e.g. `DEVELOPER_DIR=/Applications/Xcode-27.app/Contents/Developer`.
+- **Simulator:** `CarPlayTV.entitlements` includes the entitlement. Boot an iOS 27 simulator in the classic
+  Simulator app (Xcode 26's, which still has **I/O → External Displays → CarPlay**).
+- **Device / TestFlight:** builds use `CarPlayTV-Device.entitlements` (no CarPlay) until Apple grants the
+  entitlement; then add the key there.
 
 ## 3. TestFlight
 

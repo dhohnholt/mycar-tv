@@ -16,7 +16,6 @@
 		397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529F85E34801B929F287926 /* ChannelBrowserView.swift */; };
 		3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */; };
 		455724B905FD2913B7F872E8 /* XtreamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604987159990A04D2C63D6AE /* XtreamClient.swift */; };
-		46ECA4A5F47634D3476EE841 /* DrivingMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBEC3DB51AC85509E021573 /* DrivingMonitor.swift */; };
 		483272F86059D659E58AD7B6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4FF93C7747625AB04800FE /* Models.swift */; };
 		4AB579A39D07077F8D1CEBDC /* Net.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F90C51DF0182E7A4CEBF6A8 /* Net.swift */; };
 		54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B343A6DF8D8E694C2F9A66 /* RootView.swift */; };
@@ -56,7 +55,6 @@
 		BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayBrowser.swift; sourceTree = "<group>"; };
 		D0915DD4B87172F79996C59F /* CarPlayTV-Device.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarPlayTV-Device.entitlements"; sourceTree = "<group>"; };
 		DA3AA0D78D9EB4460C0F3709 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		DBBEC3DB51AC85509E021573 /* DrivingMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivingMonitor.swift; sourceTree = "<group>"; };
 		DD4FF93C7747625AB04800FE /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuth.swift; sourceTree = "<group>"; };
 		F23B314B2092745DA1DB2900 /* M3UParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3UParser.swift; sourceTree = "<group>"; };
@@ -99,7 +97,6 @@
 		243430B27BDEA3095C932CC3 /* Playback */ = {
 			isa = PBXGroup;
 			children = (
-				DBBEC3DB51AC85509E021573 /* DrivingMonitor.swift */,
 				3D3C08927A893817D3F67209 /* PlayerController.swift */,
 				0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */,
 			);
@@ -238,7 +235,6 @@
 				FE4D8FE5E1366F38D7AC6C10 /* CarPlaySceneDelegate.swift in Sources */,
 				C818C9DC9A5FBF68DAB12B69 /* CarPlayTVApp.swift in Sources */,
 				397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */,
-				46ECA4A5F47634D3476EE841 /* DrivingMonitor.swift in Sources */,
 				29271AD2E2AFFD836A526293 /* GoogleAuth.swift in Sources */,
 				3909682C25A1A6F9261C5BB1 /* HistoryStore.swift in Sources */,
 				D6C56BDA361E0459C0CD3DEF /* ImageCache.swift in Sources */,
@@ -337,7 +333,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6BA6YTBG7Z;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -357,7 +353,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -403,7 +399,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6BA6YTBG7Z;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -417,7 +413,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

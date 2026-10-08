@@ -1,17 +1,26 @@
 import CarPlay
 import Combine
+import CoreMedia
 import UIKit
 
-/// Builds the CarPlay templates: a map template (our video canvas) with TV / Movies / YouTube /
-/// Search buttons, plus the list and search templates pushed on top of it.
+/// The CarPlay video-app UI: a tab bar with TV, Movies, YouTube and Recent, list and search templates
+/// pushed on top, and the shared Now Playing template. Every playable row carries a video playback
+/// configuration, so when it's selected iOS presents the video on the car display if the car allows it
+/// (typically only while parked) and shows Now Playing otherwise.
+@available(iOS 27.0, *)
 @MainActor
 final class CarPlayBrowser: NSObject {
     private let interfaceController: CPInterfaceController
     private let player = PlayerController.shared
     private let library = LibraryStore.shared
+    private let history = HistoryStore.shared
     private var cancellables: Set<AnyCancellable> = []
     private var lastSearchText = ""
-    private var playbackButtons: [CPMapButton] = []
+
+    private let tvTab = CPListTemplate(title: "TV", sections: [])
+    private let moviesTab = CPListTemplate(title: "Movies", sections: [])
+    private let youTubeTab = CPListTemplate(title: "YouTube", sections: [])
+    private let recentTab = CPListTemplate(title: "Recent", sections: [])
 
     private var maxItems: Int { CPListTemplate.maximumItemCount }
 
@@ -19,57 +28,53 @@ final class CarPlayBrowser: NSObject {
         self.interfaceController = interfaceController
     }
 
-    func makeRootTemplate() -> CPMapTemplate {
-        let map = CPMapTemplate()
-        map.automaticallyHidesNavigationBar = false
-        map.leadingNavigationBarButtons = [
-            CPBarButton(title: "TV") { [weak self] _ in self?.showGroups(.live) },
-            CPBarButton(title: "Movies") { [weak self] _ in self?.showGroups(.movie) },
-        ]
-        map.trailingNavigationBarButtons = [
-            CPBarButton(title: "YouTube") { [weak self] _ in self?.showYouTube() },
-            CPBarButton(image: Self.symbol("magnifyingglass")) { [weak self] _ in self?.showSearch() },
-        ]
+    func makeRootTemplate() -> CPTabBarTemplate {
+        configureTab(tvTab, symbol: "tv")
+        configureTab(moviesTab, symbol: "film")
+        configureTab(youTubeTab, symbol: "play.rectangle")
+        configureTab(recentTab, symbol: "clock.arrow.circlepath")
 
-        let playPause = CPMapButton { [weak self] _ in self?.player.togglePlayPause() }
-        playPause.image = Self.symbol("play.fill")
-        let stop = CPMapButton { [weak self] _ in self?.player.stop() }
-        stop.image = Self.symbol("stop.fill")
-        let fullScreen = CPMapButton { [weak self, weak map] button in
-            guard let self, let map else { return }
-            self.setFullScreen(!self.player.carFullScreen, on: map, button: button)
-        }
-        fullScreen.image = Self.symbol("arrow.up.left.and.arrow.down.right")
-        playbackButtons = [playPause, stop]
-        map.mapButtons = [fullScreen] + playbackButtons
-
-        player.$isPlaying
-            .sink { playing in playPause.image = Self.symbol(playing ? "pause.fill" : "play.fill") }
+        // @Published sends the new value before the property changes, so use the value passed in.
+        library.$liveGroups
+            .sink { [weak self] groups in self?.reloadChannelTab(.live, groups: groups) }
+            .store(in: &cancellables)
+        library.$movieGroups
+            .sink { [weak self] groups in self?.reloadChannelTab(.movie, groups: groups) }
+            .store(in: &cancellables)
+        library.$isLoading
+            .sink { [weak self] loading in
+                guard let self else { return }
+                self.reloadChannelTab(.live, groups: self.library.liveGroups, loading: loading)
+                self.reloadChannelTab(.movie, groups: self.library.movieGroups, loading: loading)
+            }
+            .store(in: &cancellables)
+        history.$items
+            .sink { [weak self] items in self?.reloadRecentTab(items) }
+            .store(in: &cancellables)
+        GoogleAuth.shared.$isSignedIn
+            .sink { [weak self] signedIn in self?.reloadYouTubeTab(signedIn: signedIn) }
             .store(in: &cancellables)
 
-        return map
+        return CPTabBarTemplate(templates: [tvTab, moviesTab, youTubeTab, recentTab])
     }
 
-    /// Full screen: the video fills the display (cropping any letterbox), CarPlay hides the top bar after
-    /// a few seconds, and only the exit-full-screen button stays visible as an overlay.
-    private func setFullScreen(_ enabled: Bool, on map: CPMapTemplate, button: CPMapButton) {
-        player.carFullScreen = enabled
-        map.automaticallyHidesNavigationBar = enabled
-        map.hidesButtonsWithNavigationBar = false
-        map.mapButtons = enabled ? [button] : [button] + playbackButtons
-        button.image = Self.symbol(enabled ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+    private func configureTab(_ tab: CPListTemplate, symbol: String) {
+        tab.tabImage = UIImage(systemName: symbol)
+        tab.trailingNavigationBarButtons = [searchButton()]
     }
 
-    // MARK: IPTV
-
-    private func showGroups(_ kind: Channel.Kind) {
-        let groups = library.groups(kind)
-        guard !groups.isEmpty else {
-            let what = kind == .live ? "channels" : "movies"
-            return showAlert(library.isLoading ? "Still loading \(what)…" : "No \(what) yet. Add a playlist in the app on your iPhone.")
+    private func searchButton() -> CPBarButton {
+        CPBarButton(image: UIImage(systemName: "magnifyingglass") ?? UIImage()) { [weak self] _ in
+            self?.showSearch()
         }
-        let recent = recentSection()
-        let items = groups.prefix(maxItems - (recent == nil ? 0 : 1)).map { group in
+    }
+
+    // MARK: TV and Movies
+
+    private func reloadChannelTab(_ kind: Channel.Kind, groups: [ChannelGroup], loading: Bool? = nil) {
+        let tab = kind == .live ? tvTab : moviesTab
+        let isLoading = loading ?? library.isLoading
+        let items = groups.prefix(maxItems).map { group in
             let item = CPListItem(text: group.name, detailText: "\(group.channels.count)")
             item.accessoryType = .disclosureIndicator
             item.handler = { [weak self] _, completion in
@@ -78,63 +83,40 @@ final class CarPlayBrowser: NSObject {
             }
             return item
         }
-        push(CPListTemplate(title: kind == .live ? "TV" : "Movies",
-                            sections: [recent, CPListSection(items: items)].compactMap { $0 }))
+        tab.emptyViewTitleVariants = [isLoading ? "Loading…" : (kind == .live ? "No channels" : "No movies")]
+        tab.emptyViewSubtitleVariants = isLoading ? [] : ["No playlist has been added yet."]
+        tab.updateSections(items.isEmpty ? [] : [CPListSection(items: items)])
     }
 
     private func showChannels(_ group: ChannelGroup) {
-        var items = group.channels.prefix(maxItems).map(channelItem)
+        var items = group.channels.prefix(maxItems).map { playableItem(.stream($0)) }
         if group.channels.count > items.count {
             items.removeLast()
             items.append(CPListItem(text: "\(group.channels.count - items.count) more — use Search", detailText: nil))
         }
-        push(CPListTemplate(title: group.name, sections: [CPListSection(items: items)]))
+        let template = CPListTemplate(title: group.name, sections: [CPListSection(items: items)])
+        template.trailingNavigationBarButtons = [searchButton()]
+        push(template)
     }
 
-    private func channelItem(_ channel: Channel) -> CPListItem {
-        let item = CPListItem(text: channel.name, detailText: channel.kind == .movie ? channel.group : nil)
-        item.handler = { [weak self] _, completion in
-            self?.play(.stream(channel))
-            completion()
-        }
-        loadImage(channel.logoURL, into: item)
-        return item
-    }
+    // MARK: Recent
 
-    // MARK: Recently watched
-
-    /// A "Recently watched" shortcut shown above the TV and Movies groups, if there's any history.
-    private func recentSection() -> CPListSection? {
-        guard !HistoryStore.shared.items.isEmpty else { return nil }
-        let item = menuItem("Recently watched", symbol: "clock.arrow.circlepath") { [weak self] in self?.showRecent() }
-        return CPListSection(items: [item])
-    }
-
-    private func showRecent() {
-        let history = HistoryStore.shared.items
-        guard !history.isEmpty else {
-            return showAlert("Nothing watched yet.")
-        }
-        let items = history.prefix(maxItems).map { media in
-            let item = CPListItem(text: media.title, detailText: media.subtitle)
-            item.handler = { [weak self] _, completion in
-                self?.play(media)
-                completion()
-            }
-            loadImage(media.artworkURL, into: item)
-            return item
-        }
-        push(CPListTemplate(title: "Recently watched", sections: [CPListSection(items: items)]))
+    private func reloadRecentTab(_ items: [MediaItem]) {
+        recentTab.emptyViewTitleVariants = ["Nothing watched yet"]
+        let rows = items.prefix(maxItems).map(playableItem)
+        recentTab.updateSections(rows.isEmpty ? [] : [CPListSection(items: rows)])
     }
 
     // MARK: YouTube
 
-    private func showYouTube() {
-        guard GoogleAuth.shared.isSignedIn else {
-            return showAlert("Sign in to YouTube in the app on your iPhone first.")
+    private func reloadYouTubeTab(signedIn: Bool) {
+        guard signedIn else {
+            youTubeTab.emptyViewTitleVariants = ["Not signed in to YouTube"]
+            youTubeTab.emptyViewSubtitleVariants = ["YouTube isn't connected to Car TV."]
+            youTubeTab.updateSections([])
+            return
         }
         let items = [
-            menuItem("Recently watched", symbol: "clock.arrow.circlepath") { [weak self] in self?.showRecent() },
             menuItem("Search", symbol: "magnifyingglass") { [weak self] in self?.showSearch() },
             menuItem("Liked videos", symbol: "hand.thumbsup") { [weak self] in
                 self?.showVideos(title: "Liked videos") { try await YouTubeAPI.liked() }
@@ -146,7 +128,7 @@ final class CarPlayBrowser: NSObject {
                 self?.showPlaylists(title: "Playlists") { try await YouTubeAPI.playlists() }
             },
         ]
-        push(CPListTemplate(title: "YouTube", sections: [CPListSection(items: items)]))
+        youTubeTab.updateSections([CPListSection(items: items)])
     }
 
     private func showPlaylists(title: String, load: @escaping () async throws -> [YouTubePlaylist]) {
@@ -168,15 +150,7 @@ final class CarPlayBrowser: NSObject {
     private func showVideos(title: String, load: @escaping () async throws -> [YouTubeVideo]) {
         showLoadingList(title: title) { [weak self] in
             guard let self else { return [] }
-            return try await load().prefix(self.maxItems).map { video in
-                let item = CPListItem(text: video.title, detailText: video.channelTitle)
-                item.handler = { [weak self] _, completion in
-                    self?.play(.youtube(video))
-                    completion()
-                }
-                self.loadImage(video.thumbnailURL, into: item)
-                return item
-            }
+            return try await load().prefix(self.maxItems).map { self.playableItem(.youtube($0)) }
         }
     }
 
@@ -189,7 +163,7 @@ final class CarPlayBrowser: NSObject {
             do {
                 let items = try await load()
                 template.emptyViewTitleVariants = ["Nothing here"]
-                template.updateSections([CPListSection(items: items)])
+                template.updateSections(items.isEmpty ? [] : [CPListSection(items: items)])
             } catch {
                 template.emptyViewTitleVariants = ["Couldn't load"]
                 template.emptyViewSubtitleVariants = [error.localizedDescription]
@@ -208,16 +182,29 @@ final class CarPlayBrowser: NSObject {
 
     private func searchYouTube(_ query: String) {
         guard GoogleAuth.shared.isSignedIn else {
-            return showAlert("Sign in to YouTube in the app on your iPhone first.")
+            return showAlert("YouTube isn't connected to Car TV.")
         }
         showVideos(title: query) { try await YouTubeAPI.search(query) }
     }
 
     // MARK: Helpers
 
-    private func play(_ item: MediaItem) {
-        player.play(item)
-        interfaceController.popToRootTemplate(animated: true, completion: nil)
+    /// A row that plays `media` when selected. The playback configuration tells iOS to present the
+    /// video on the car display when available.
+    private func playableItem(_ media: MediaItem) -> CPListItem {
+        let item = CPListItem(text: media.title, detailText: media.subtitle)
+        item.playbackConfiguration = CPPlaybackConfiguration(
+            preferredPresentation: .video,
+            playbackAction: .play,
+            elapsedTime: .zero,
+            duration: .zero // unknown or live
+        )
+        item.handler = { [weak self] _, completion in
+            self?.player.play(media)
+            completion()
+        }
+        loadImage(media.artworkURL, into: item)
+        return item
     }
 
     private func push(_ template: CPTemplate) {
@@ -234,7 +221,7 @@ final class CarPlayBrowser: NSObject {
     }
 
     private func menuItem(_ title: String, symbol: String, action: @escaping () -> Void) -> CPListItem {
-        let item = CPListItem(text: title, detailText: nil, image: Self.symbol(symbol))
+        let item = CPListItem(text: title, detailText: nil, image: UIImage(systemName: symbol))
         item.accessoryType = .disclosureIndicator
         item.handler = { _, completion in
             action()
@@ -251,12 +238,9 @@ final class CarPlayBrowser: NSObject {
             }
         }
     }
-
-    private static func symbol(_ name: String) -> UIImage {
-        UIImage(systemName: name) ?? UIImage()
-    }
 }
 
+@available(iOS 27.0, *)
 extension CarPlayBrowser: CPSearchTemplateDelegate {
     func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String,
                         completionHandler: @escaping ([CPListItem]) -> Void) {
@@ -275,7 +259,8 @@ extension CarPlayBrowser: CPSearchTemplateDelegate {
             return item
         }
         if GoogleAuth.shared.isSignedIn {
-            let youtube = CPListItem(text: "Search YouTube for “\(query)”", detailText: nil, image: Self.symbol("play.rectangle"))
+            let youtube = CPListItem(text: "Search YouTube for “\(query)”", detailText: nil,
+                                     image: UIImage(systemName: "play.rectangle"))
             youtube.userInfo = query
             items.insert(youtube, at: 0)
         }
@@ -285,7 +270,7 @@ extension CarPlayBrowser: CPSearchTemplateDelegate {
     func searchTemplate(_ searchTemplate: CPSearchTemplate, selectedResult item: CPListItem,
                         completionHandler: @escaping () -> Void) {
         if let media = item.userInfo as? MediaItem {
-            play(media)
+            player.play(media)
         } else if let query = item.userInfo as? String {
             searchYouTube(query)
         }

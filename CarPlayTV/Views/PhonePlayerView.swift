@@ -6,7 +6,7 @@ struct PhonePlayerView: View {
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
-            VideoSurface(role: .phone)
+            VideoSurface()
                 .ignoresSafeArea()
             HStack(spacing: 24) {
                 Button { player.phonePlayerPresented = false } label: {
@@ -32,11 +32,9 @@ struct PhonePlayerView: View {
 }
 
 struct VideoSurface: UIViewRepresentable {
-    let role: PlayerController.SurfaceRole
-
     func makeUIView(context: Context) -> VideoSurfaceView {
         let view = VideoSurfaceView()
-        PlayerController.shared.register(view, as: role)
+        PlayerController.shared.register(view)
         return view
     }
 
