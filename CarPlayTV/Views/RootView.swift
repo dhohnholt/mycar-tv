@@ -37,8 +37,13 @@ struct NowPlayingBar: View {
                 Spacer()
                 Button { player.togglePlayPause() } label: {
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
+                        .frame(minWidth: 44, minHeight: 44)
                 }
-                Button { player.stop() } label: { Image(systemName: "stop.fill") }
+                .accessibilityLabel(player.isPlaying ? "Pause playback" : "Resume playback")
+                Button { player.stop() } label: {
+                    Image(systemName: "stop.fill").frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("Stop playback")
             }
             .font(.title3)
             .padding(.horizontal)

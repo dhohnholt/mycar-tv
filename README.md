@@ -50,8 +50,8 @@ allows it (otherwise Now Playing). The app never draws on the car screen itself.
 - **Build with Xcode 27** (iOS 27 SDK), e.g. `DEVELOPER_DIR=/Applications/Xcode-27.app/Contents/Developer`.
 - **Simulator:** `CarPlayTV.entitlements` includes the entitlement. Boot an iOS 27 simulator in the classic
   Simulator app (Xcode 26's, which still has **I/O → External Displays → CarPlay**).
-- **Device / TestFlight:** builds use `CarPlayTV-Device.entitlements` (no CarPlay) until Apple grants the
-  entitlement; then add the key there.
+- **Device / TestFlight:** build 4 enables CarPlay video in `CarPlayTV-Device.entitlements`.
+  Archiving and distribution require an Apple-approved provisioning profile containing this entitlement.
 
 ## 3. TestFlight
 

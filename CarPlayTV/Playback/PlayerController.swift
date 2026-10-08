@@ -16,6 +16,7 @@ final class PlayerController: ObservableObject {
 
     /// Set by the CarPlay scene. While connected, starting playback doesn't open the phone player.
     @Published var carConnected = false
+    @Published private(set) var externalDisplayConnected = false
 
     let avPlayer: AVPlayer = {
         let player = AVPlayer()
@@ -120,12 +121,16 @@ final class PlayerController: ObservableObject {
 
     func registerExternal(_ surface: VideoSurfaceView) {
         externalSurface = surface
+        externalDisplayConnected = true
         refreshSurface()
     }
 
     func unregister(_ surface: VideoSurfaceView) {
         if phoneSurface === surface { phoneSurface = nil }
-        if externalSurface === surface { externalSurface = nil }
+        if externalSurface === surface {
+            externalSurface = nil
+            externalDisplayConnected = false
+        }
         refreshSurface()
     }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RecentView: View {
     @ObservedObject private var history = HistoryStore.shared
+    @State private var confirmingClear = false
 
     var body: some View {
         NavigationStack {
@@ -21,8 +22,14 @@ struct RecentView: View {
             .navigationTitle("Recently watched")
             .toolbar {
                 if !history.items.isEmpty {
-                    Button("Clear", role: .destructive) { history.clear() }
+                    Button("Clear", role: .destructive) { confirmingClear = true }
                 }
+            }
+            .confirmationDialog("Clear watch history?", isPresented: $confirmingClear, titleVisibility: .visible) {
+                Button("Clear watch history", role: .destructive) { history.clear() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This removes your recently watched list from this iPhone.")
             }
             .nowPlayingInset()
         }

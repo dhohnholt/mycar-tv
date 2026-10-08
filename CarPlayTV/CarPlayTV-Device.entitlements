@@ -2,8 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Device builds (TestFlight) until Apple grants a CarPlay entitlement to the team.
-	     Once granted, add that entitlement here (or delete this file and the
-	     CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*] line in project.yml). -->
+	<key>com.apple.developer.carplay-video</key>
+	<true/>
 </dict>
 </plist>

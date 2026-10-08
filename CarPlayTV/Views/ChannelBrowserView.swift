@@ -26,15 +26,20 @@ struct ChannelBrowserView: View {
     @ViewBuilder
     private var content: some View {
         let channels = library.channels(kind)
-        if channels.isEmpty {
+        if library.isLoading && channels.isEmpty {
+            ProgressView("Loading your library…")
+        } else if channels.isEmpty {
             ContentUnavailableView {
-                Label(library.isLoading ? "Loading…" : "Nothing here yet", systemImage: kind == .live ? "tv" : "film")
+                Label(kind == .live ? "No channels yet" : "No movies yet", systemImage: kind == .live ? "tv" : "film")
             } description: {
                 Text("Add an M3U playlist or an Xtream login in Settings.")
             }
         } else if !query.trimmed.isEmpty {
-            List(channels.filter { $0.name.localizedCaseInsensitiveContains(query.trimmed) }.prefix(200)) {
-                ChannelRow(channel: $0)
+            let matches = channels.filter { $0.name.localizedCaseInsensitiveContains(query.trimmed) }
+            if matches.isEmpty {
+                ContentUnavailableView.search(text: query.trimmed)
+            } else {
+                List(matches) { ChannelRow(channel: $0) }
             }
         } else {
             List(library.groups(kind)) { group in
@@ -60,6 +65,7 @@ struct ChannelRow: View {
                     Image(systemName: channel.kind == .live ? "tv" : "film").foregroundStyle(.secondary)
                 }
                 .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
                 Text(channel.name)
                     .foregroundStyle(.primary)
                     .lineLimit(2)

@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var username = ""
     @State private var password = ""
     @State private var authError: String?
+    @State private var confirmingClearHistory = false
 
     var body: some View {
         NavigationStack {
@@ -23,13 +24,19 @@ struct SettingsView: View {
                     Text("Playlists, logins, YouTube tokens and watch history are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
-                    Button("Clear watch history", role: .destructive) { history.clear() }
+                    Button("Clear watch history", role: .destructive) { confirmingClearHistory = true }
                         .disabled(history.items.isEmpty)
                 }
             }
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Settings")
             .onAppear(perform: loadXtreamFields)
+            .confirmationDialog("Clear watch history?", isPresented: $confirmingClearHistory, titleVisibility: .visible) {
+                Button("Clear watch history", role: .destructive) { history.clear() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This removes your recently watched list from this iPhone.")
+            }
         }
     }
 
