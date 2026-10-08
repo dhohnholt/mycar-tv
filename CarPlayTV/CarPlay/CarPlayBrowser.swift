@@ -34,13 +34,27 @@ final class CarPlayBrowser: NSObject {
         playPause.image = Self.symbol("play.fill")
         let stop = CPMapButton { [weak self] _ in self?.player.stop() }
         stop.image = Self.symbol("stop.fill")
-        map.mapButtons = [playPause, stop]
+        let fullScreen = CPMapButton { [weak self, weak map] button in
+            guard let self, let map else { return }
+            self.setFullScreen(!self.player.carFullScreen, on: map, button: button)
+        }
+        fullScreen.image = Self.symbol("arrow.up.left.and.arrow.down.right")
+        map.mapButtons = [fullScreen, playPause, stop]
 
         player.$isPlaying
             .sink { playing in playPause.image = Self.symbol(playing ? "pause.fill" : "play.fill") }
             .store(in: &cancellables)
 
         return map
+    }
+
+    /// Full screen: the video fills the display (cropping any letterbox) and CarPlay hides the bar and
+    /// buttons after a few seconds of no interaction. Tapping the screen brings them back.
+    private func setFullScreen(_ enabled: Bool, on map: CPMapTemplate, button: CPMapButton) {
+        player.carFullScreen = enabled
+        map.automaticallyHidesNavigationBar = enabled
+        map.hidesButtonsWithNavigationBar = enabled
+        button.image = Self.symbol(enabled ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
     }
 
     // MARK: IPTV

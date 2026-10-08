@@ -16,6 +16,11 @@ final class PlayerController: ObservableObject {
     @Published private(set) var drivingLocked = false
     @Published var phonePlayerPresented = false
 
+    /// Car screen only: zoom video to fill the display instead of letterboxing it.
+    @Published var carFullScreen = false {
+        didSet { carSurface?.fillsScreen = carFullScreen }
+    }
+
     @Published var carConnected = false {
         didSet {
             refreshDrivingMonitor()
@@ -119,7 +124,9 @@ final class PlayerController: ObservableObject {
     func register(_ surface: VideoSurfaceView, as role: SurfaceRole) {
         switch role {
         case .phone: phoneSurface = surface
-        case .car: carSurface = surface
+        case .car:
+            carSurface = surface
+            surface.fillsScreen = carFullScreen
         }
         refreshSurfaces()
     }
