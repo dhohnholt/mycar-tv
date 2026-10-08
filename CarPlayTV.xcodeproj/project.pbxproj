@@ -260,7 +260,7 @@
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				GOOGLE_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";
 				INFOPLIST_FILE = CarPlayTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -279,7 +279,7 @@
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				GOOGLE_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";
 				INFOPLIST_FILE = CarPlayTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

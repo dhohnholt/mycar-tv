@@ -22,7 +22,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Paste your iOS OAuth client ID from Google Cloud Console here (see README).
-        GOOGLE_CLIENT_ID: ""
+        GOOGLE_CLIENT_ID: 969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com
     info:
       path: CarPlayTV/Info.plist
       properties:
