@@ -1,0 +1,5 @@
+# Publishes the app's home, privacy and terms pages (docs/) at cartv.tmechsmonitor.org.
+# No build step: Netlify serves the folder as-is.
+[build]
+  publish = "docs"
+  command = ""
