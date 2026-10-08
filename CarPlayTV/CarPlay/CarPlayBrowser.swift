@@ -51,7 +51,8 @@ final class CarPlayBrowser: NSObject {
             let what = kind == .live ? "channels" : "movies"
             return showAlert(library.isLoading ? "Still loading \(what)…" : "No \(what) yet. Add a playlist in the app on your iPhone.")
         }
-        let items = groups.prefix(maxItems).map { group in
+        let recent = recentSection()
+        let items = groups.prefix(maxItems - (recent == nil ? 0 : 1)).map { group in
             let item = CPListItem(text: group.name, detailText: "\(group.channels.count)")
             item.accessoryType = .disclosureIndicator
             item.handler = { [weak self] _, completion in
@@ -60,7 +61,8 @@ final class CarPlayBrowser: NSObject {
             }
             return item
         }
-        push(CPListTemplate(title: kind == .live ? "TV" : "Movies", sections: [CPListSection(items: items)]))
+        push(CPListTemplate(title: kind == .live ? "TV" : "Movies",
+                            sections: [recent, CPListSection(items: items)].compactMap { $0 }))
     }
 
     private func showChannels(_ group: ChannelGroup) {
@@ -82,6 +84,32 @@ final class CarPlayBrowser: NSObject {
         return item
     }
 
+    // MARK: Recently watched
+
+    /// A "Recently watched" shortcut shown above the TV and Movies groups, if there's any history.
+    private func recentSection() -> CPListSection? {
+        guard !HistoryStore.shared.items.isEmpty else { return nil }
+        let item = menuItem("Recently watched", symbol: "clock.arrow.circlepath") { [weak self] in self?.showRecent() }
+        return CPListSection(items: [item])
+    }
+
+    private func showRecent() {
+        let history = HistoryStore.shared.items
+        guard !history.isEmpty else {
+            return showAlert("Nothing watched yet.")
+        }
+        let items = history.prefix(maxItems).map { media in
+            let item = CPListItem(text: media.title, detailText: media.subtitle)
+            item.handler = { [weak self] _, completion in
+                self?.play(media)
+                completion()
+            }
+            loadImage(media.artworkURL, into: item)
+            return item
+        }
+        push(CPListTemplate(title: "Recently watched", sections: [CPListSection(items: items)]))
+    }
+
     // MARK: YouTube
 
     private func showYouTube() {
@@ -89,6 +117,7 @@ final class CarPlayBrowser: NSObject {
             return showAlert("Sign in to YouTube in the app on your iPhone first.")
         }
         let items = [
+            menuItem("Recently watched", symbol: "clock.arrow.circlepath") { [weak self] in self?.showRecent() },
             menuItem("Search", symbol: "magnifyingglass") { [weak self] in self?.showSearch() },
             menuItem("Liked videos", symbol: "hand.thumbsup") { [weak self] in
                 self?.showVideos(title: "Liked videos") { try await YouTubeAPI.liked() }

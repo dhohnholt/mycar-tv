@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject private var library: LibraryStore
     @EnvironmentObject private var auth: GoogleAuth
     @ObservedObject private var driving = DrivingMonitor.shared
+    @ObservedObject private var history = HistoryStore.shared
     @AppStorage(AppSettings.speedLockKey) private var speedLock = true
 
     @State private var newPlaylist = ""
@@ -21,9 +22,11 @@ struct SettingsView: View {
                 youTubeSection
                 safetySection
                 Section("Privacy") {
-                    Text("Playlists, logins and YouTube tokens are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
+                    Text("Playlists, logins, YouTube tokens and watch history are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
+                    Button("Clear watch history", role: .destructive) { history.clear() }
+                        .disabled(history.items.isEmpty)
                 }
             }
             .scrollDismissesKeyboard(.immediately)

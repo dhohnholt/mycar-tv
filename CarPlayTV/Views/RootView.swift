@@ -11,6 +11,8 @@ struct RootView: View {
                 .tabItem { Label("Movies", systemImage: "film") }
             YouTubeHomeView()
                 .tabItem { Label("YouTube", systemImage: "play.rectangle") }
+            RecentView()
+                .tabItem { Label("Recent", systemImage: "clock.arrow.circlepath") }
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }

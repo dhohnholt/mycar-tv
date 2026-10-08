@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		0331B93719B03E7CE6C3B0DB /* YouTubePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D3CF237BEE1195969BAF1B /* YouTubePlayerView.swift */; };
 		03E07224D7EF89EDB05A64D5 /* YouTubeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8B942D8D4402CAAEFC0ABA /* YouTubeAPI.swift */; };
+		23BBC956FC99307C0FBE2EA8 /* RecentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F931286660672010F8240E8A /* RecentView.swift */; };
 		29271AD2E2AFFD836A526293 /* GoogleAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */; };
 		30A6FA69D8F071493F051C1A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3AA0D78D9EB4460C0F3709 /* SettingsView.swift */; };
+		3909682C25A1A6F9261C5BB1 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */; };
 		397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529F85E34801B929F287926 /* ChannelBrowserView.swift */; };
 		3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */; };
 		455724B905FD2913B7F872E8 /* XtreamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604987159990A04D2C63D6AE /* XtreamClient.swift */; };
@@ -47,6 +49,7 @@
 		6649990CF76A3FB58A5519AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7F90C51DF0182E7A4CEBF6A8 /* Net.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Net.swift; sourceTree = "<group>"; };
 		9AC746E6FE6CE4EAE377DEA1 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		A8E807C6ABB6D1307AB992BF /* CarPlayTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayTVApp.swift; sourceTree = "<group>"; };
 		AAF0F557E3D4288948E03DC0 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		BB2AE86EA25F34DC4A846338 /* CarPlayTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CarPlayTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +59,7 @@
 		DD4FF93C7747625AB04800FE /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuth.swift; sourceTree = "<group>"; };
 		F23B314B2092745DA1DB2900 /* M3UParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3UParser.swift; sourceTree = "<group>"; };
+		F931286660672010F8240E8A /* RecentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentView.swift; sourceTree = "<group>"; };
 		FEAA6EA190414398362277F5 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +79,7 @@
 			children = (
 				0529F85E34801B929F287926 /* ChannelBrowserView.swift */,
 				11184180D68028FED0AFB961 /* PhonePlayerView.swift */,
+				F931286660672010F8240E8A /* RecentView.swift */,
 				61B343A6DF8D8E694C2F9A66 /* RootView.swift */,
 				DA3AA0D78D9EB4460C0F3709 /* SettingsView.swift */,
 				310AE09EB77574FADBFAEDBF /* YouTubeViews.swift */,
@@ -127,6 +132,7 @@
 		8B662F3F3B974B4BAF5EFA69 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */,
 				AAF0F557E3D4288948E03DC0 /* Keychain.swift */,
 				601E3F2A3299413F646E0ADF /* LibraryStore.swift */,
 				F23B314B2092745DA1DB2900 /* M3UParser.swift */,
@@ -232,6 +238,7 @@
 				397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */,
 				46ECA4A5F47634D3476EE841 /* DrivingMonitor.swift in Sources */,
 				29271AD2E2AFFD836A526293 /* GoogleAuth.swift in Sources */,
+				3909682C25A1A6F9261C5BB1 /* HistoryStore.swift in Sources */,
 				D6C56BDA361E0459C0CD3DEF /* ImageCache.swift in Sources */,
 				FEA78472B1C4C5C51051DC15 /* Keychain.swift in Sources */,
 				986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */,
@@ -240,6 +247,7 @@
 				4AB579A39D07077F8D1CEBDC /* Net.swift in Sources */,
 				7D6C26FC170D8162F412B072 /* PhonePlayerView.swift in Sources */,
 				A7F0662C655A6A9927CE4F93 /* PlayerController.swift in Sources */,
+				23BBC956FC99307C0FBE2EA8 /* RecentView.swift in Sources */,
 				54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */,
 				30A6FA69D8F071493F051C1A /* SettingsView.swift in Sources */,
 				3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */,

@@ -67,6 +67,7 @@ final class PlayerController: ObservableObject {
     func play(_ item: MediaItem) {
         stopPlayback()
         current = item
+        HistoryStore.shared.record(item)
         switch item {
         case .stream(let channel):
             avPlayer.replaceCurrentItem(with: AVPlayerItem(url: channel.streamURL))

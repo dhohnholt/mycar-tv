@@ -31,9 +31,23 @@ struct YouTubePlaylist: Hashable, Identifiable {
     let thumbnailURL: URL?
 }
 
-enum MediaItem: Hashable {
+enum MediaItem: Hashable, Identifiable, Codable {
     case stream(Channel)
     case youtube(YouTubeVideo)
+
+    var id: String {
+        switch self {
+        case .stream(let c): "stream:\(c.id)"
+        case .youtube(let v): "youtube:\(v.id)"
+        }
+    }
+
+    var artworkURL: URL? {
+        switch self {
+        case .stream(let c): c.logoURL
+        case .youtube(let v): v.thumbnailURL
+        }
+    }
 
     var title: String {
         switch self {
