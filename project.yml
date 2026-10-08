@@ -21,7 +21,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.hohnholt.carplaytv
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: CarPlayTV/CarPlayTV.entitlements
-        # Device testing enables CarPlay video; signing requires Apple-approved provisioning.
+        # Device/TestFlight builds omit CarPlay until Apple grants com.apple.developer.carplay-video.
         "CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]": CarPlayTV/CarPlayTV-Device.entitlements
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

@@ -2,7 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.carplay-video</key>
-	<true/>
+	<!-- Device builds (TestFlight). Apple hasn't granted com.apple.developer.carplay-video to the team
+	     yet (Case-ID 22734816), and signing fails with it here ("not found and could not be included in
+	     profile"). Once Apple approves, add back:
+	     <key>com.apple.developer.carplay-video</key><true/> -->
 </dict>
 </plist>
