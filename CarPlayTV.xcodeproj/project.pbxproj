@@ -15,27 +15,61 @@
 		3909682C25A1A6F9261C5BB1 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */; };
 		397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529F85E34801B929F287926 /* ChannelBrowserView.swift */; };
 		3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */; };
+		3E5C04B61DFAA808895A7B17 /* ExternalDisplaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E01D1460B3125162851CE6 /* ExternalDisplaySceneDelegate.swift */; };
 		455724B905FD2913B7F872E8 /* XtreamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604987159990A04D2C63D6AE /* XtreamClient.swift */; };
 		483272F86059D659E58AD7B6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4FF93C7747625AB04800FE /* Models.swift */; };
 		4AB579A39D07077F8D1CEBDC /* Net.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F90C51DF0182E7A4CEBF6A8 /* Net.swift */; };
 		54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B343A6DF8D8E694C2F9A66 /* RootView.swift */; };
+		5D870D35B72BFB4665F7DC70 /* MirrorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */; };
 		6FB8A51466481406BE198556 /* CarPlayBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */; };
 		7D6C26FC170D8162F412B072 /* PhonePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11184180D68028FED0AFB961 /* PhonePlayerView.swift */; };
 		986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601E3F2A3299413F646E0ADF /* LibraryStore.swift */; };
+		9F481CC2D864BBF9F33C884F /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3488A147538D84069B0C56 /* SampleHandler.swift */; };
 		A7F0662C655A6A9927CE4F93 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3C08927A893817D3F67209 /* PlayerController.swift */; };
 		AFC7A1F5A6B9C5C153D0CAC6 /* M3UParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23B314B2092745DA1DB2900 /* M3UParser.swift */; };
+		B66C57B9D8368960B2317285 /* BackgroundKeepAlive.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */; };
+		BB20AD83E33F65D8971A597A /* MirrorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */; };
 		C818C9DC9A5FBF68DAB12B69 /* CarPlayTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E807C6ABB6D1307AB992BF /* CarPlayTVApp.swift */; };
 		C937A9713F2568CAAF5630AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6649990CF76A3FB58A5519AD /* Assets.xcassets */; };
 		D6C56BDA361E0459C0CD3DEF /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAA6EA190414398362277F5 /* ImageCache.swift */; };
+		DB972EFD7EE8271184000AEB /* MirrorReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */; };
 		E51E97AF16741D554F374C80 /* YouTubeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310AE09EB77574FADBFAEDBF /* YouTubeViews.swift */; };
+		F5154E438106C417F33D6CFF /* MirroringSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21F750E3DBC34F464DF5709 /* MirroringSection.swift */; };
+		FC68789E4A792AB9B5C5407B /* ScreenRelay.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6CCDC54971E3EB0F7C872F27 /* ScreenRelay.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE4D8FE5E1366F38D7AC6C10 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC746E6FE6CE4EAE377DEA1 /* CarPlaySceneDelegate.swift */; };
 		FEA78472B1C4C5C51051DC15 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF0F557E3D4288948E03DC0 /* Keychain.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B1BE786D414D70F8C89CF282 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8E3512EFC42E37DB5734032D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 73143D9EDDBE08B28B32E224;
+			remoteInfo = ScreenRelay;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A3AD0AEA2F770E1EFB8A2BEF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FC68789E4A792AB9B5C5407B /* ScreenRelay.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorProtocol.swift; sourceTree = "<group>"; };
 		0529F85E34801B929F287926 /* ChannelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBrowserView.swift; sourceTree = "<group>"; };
 		0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSurfaceView.swift; sourceTree = "<group>"; };
 		11184180D68028FED0AFB961 /* PhonePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePlayerView.swift; sourceTree = "<group>"; };
+		18E01D1460B3125162851CE6 /* ExternalDisplaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplaySceneDelegate.swift; sourceTree = "<group>"; };
 		20D3CF237BEE1195969BAF1B /* YouTubePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubePlayerView.swift; sourceTree = "<group>"; };
 		2309078DB2AD2DA268A08F75 /* CarPlayTV.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CarPlayTV.entitlements; sourceTree = "<group>"; };
 		2B8B942D8D4402CAAEFC0ABA /* YouTubeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeAPI.swift; sourceTree = "<group>"; };
@@ -46,23 +80,38 @@
 		604987159990A04D2C63D6AE /* XtreamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XtreamClient.swift; sourceTree = "<group>"; };
 		61B343A6DF8D8E694C2F9A66 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		6649990CF76A3FB58A5519AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6C3488A147538D84069B0C56 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
+		6CCDC54971E3EB0F7C872F27 /* ScreenRelay.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ScreenRelay.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F90C51DF0182E7A4CEBF6A8 /* Net.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Net.swift; sourceTree = "<group>"; };
+		87AA8E3940BA1025FAAE26C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9AC746E6FE6CE4EAE377DEA1 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		A8E807C6ABB6D1307AB992BF /* CarPlayTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayTVApp.swift; sourceTree = "<group>"; };
 		AAF0F557E3D4288948E03DC0 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorReceiver.swift; sourceTree = "<group>"; };
 		BB2AE86EA25F34DC4A846338 /* CarPlayTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CarPlayTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayBrowser.swift; sourceTree = "<group>"; };
 		D0915DD4B87172F79996C59F /* CarPlayTV-Device.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarPlayTV-Device.entitlements"; sourceTree = "<group>"; };
 		DA3AA0D78D9EB4460C0F3709 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DD4FF93C7747625AB04800FE /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		E21F750E3DBC34F464DF5709 /* MirroringSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirroringSection.swift; sourceTree = "<group>"; };
 		EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuth.swift; sourceTree = "<group>"; };
+		F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundKeepAlive.swift; sourceTree = "<group>"; };
 		F23B314B2092745DA1DB2900 /* M3UParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3UParser.swift; sourceTree = "<group>"; };
 		F931286660672010F8240E8A /* RecentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentView.swift; sourceTree = "<group>"; };
 		FEAA6EA190414398362277F5 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0B4D4236D08102A3F7D7404C /* ScreenRelay */ = {
+			isa = PBXGroup;
+			children = (
+				87AA8E3940BA1025FAAE26C7 /* Info.plist */,
+				6C3488A147538D84069B0C56 /* SampleHandler.swift */,
+			);
+			path = ScreenRelay;
+			sourceTree = "<group>";
+		};
 		0CABE527969E536BE7D5FA6A /* CarPlay */ = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				0529F85E34801B929F287926 /* ChannelBrowserView.swift */,
+				E21F750E3DBC34F464DF5709 /* MirroringSection.swift */,
 				11184180D68028FED0AFB961 /* PhonePlayerView.swift */,
 				F931286660672010F8240E8A /* RecentView.swift */,
 				61B343A6DF8D8E694C2F9A66 /* RootView.swift */,
@@ -113,6 +163,7 @@
 				1AAF5BE9B31A9F157960B939 /* App */,
 				0CABE527969E536BE7D5FA6A /* CarPlay */,
 				8B662F3F3B974B4BAF5EFA69 /* Library */,
+				73F85738772F1A8CCB5471F5 /* Mirroring */,
 				243430B27BDEA3095C932CC3 /* Playback */,
 				1788BFAFE61F34EB95D2D2A3 /* Views */,
 				EEEF00E62DBCAC9B06141509 /* YouTube */,
@@ -124,8 +175,19 @@
 			isa = PBXGroup;
 			children = (
 				BB2AE86EA25F34DC4A846338 /* CarPlayTV.app */,
+				6CCDC54971E3EB0F7C872F27 /* ScreenRelay.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		73F85738772F1A8CCB5471F5 /* Mirroring */ = {
+			isa = PBXGroup;
+			children = (
+				F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */,
+				18E01D1460B3125162851CE6 /* ExternalDisplaySceneDelegate.swift */,
+				B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */,
+			);
+			path = Mirroring;
 			sourceTree = "<group>";
 		};
 		8B662F3F3B974B4BAF5EFA69 /* Library */ = {
@@ -142,10 +204,20 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		CFC2CFA5FB4F0DCD570DA21F /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		D5E544656678367B5DCEFEFD = {
 			isa = PBXGroup;
 			children = (
 				380214F05A65DDA9D7C6D2FF /* CarPlayTV */,
+				0B4D4236D08102A3F7D7404C /* ScreenRelay */,
+				CFC2CFA5FB4F0DCD570DA21F /* Shared */,
 				56B80087D9E433C061684315 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -163,16 +235,35 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		73143D9EDDBE08B28B32E224 /* ScreenRelay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90D9A849B302BCF1D6DBFB85 /* Build configuration list for PBXNativeTarget "ScreenRelay" */;
+			buildPhases = (
+				1ABFBA0977266619FF80B27C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScreenRelay;
+			packageProductDependencies = (
+			);
+			productName = ScreenRelay;
+			productReference = 6CCDC54971E3EB0F7C872F27 /* ScreenRelay.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		CEF289C68DF3BBA7B710B383 /* CarPlayTV */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6D2DD264B32F1F27F4AACAFE /* Build configuration list for PBXNativeTarget "CarPlayTV" */;
 			buildPhases = (
 				95DB5440CDD5C0C81E598E84 /* Sources */,
 				E75CD94A3451BDA556BB14C5 /* Resources */,
+				A3AD0AEA2F770E1EFB8A2BEF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F61B9CF91FA238B0321AD19B /* PBXTargetDependency */,
 			);
 			name = CarPlayTV;
 			packageProductDependencies = (
@@ -190,6 +281,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					73143D9EDDBE08B28B32E224 = {
+						DevelopmentTeam = 6BA6YTBG7Z;
+						ProvisioningStyle = Automatic;
+					};
 					CEF289C68DF3BBA7B710B383 = {
 						DevelopmentTeam = 6BA6YTBG7Z;
 						ProvisioningStyle = Automatic;
@@ -211,6 +306,7 @@
 			projectRoot = "";
 			targets = (
 				CEF289C68DF3BBA7B710B383 /* CarPlayTV */,
+				73143D9EDDBE08B28B32E224 /* ScreenRelay */,
 			);
 		};
 /* End PBXProject section */
@@ -227,20 +323,34 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1ABFBA0977266619FF80B27C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB20AD83E33F65D8971A597A /* MirrorProtocol.swift in Sources */,
+				9F481CC2D864BBF9F33C884F /* SampleHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		95DB5440CDD5C0C81E598E84 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B66C57B9D8368960B2317285 /* BackgroundKeepAlive.swift in Sources */,
 				6FB8A51466481406BE198556 /* CarPlayBrowser.swift in Sources */,
 				FE4D8FE5E1366F38D7AC6C10 /* CarPlaySceneDelegate.swift in Sources */,
 				C818C9DC9A5FBF68DAB12B69 /* CarPlayTVApp.swift in Sources */,
 				397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */,
+				3E5C04B61DFAA808895A7B17 /* ExternalDisplaySceneDelegate.swift in Sources */,
 				29271AD2E2AFFD836A526293 /* GoogleAuth.swift in Sources */,
 				3909682C25A1A6F9261C5BB1 /* HistoryStore.swift in Sources */,
 				D6C56BDA361E0459C0CD3DEF /* ImageCache.swift in Sources */,
 				FEA78472B1C4C5C51051DC15 /* Keychain.swift in Sources */,
 				986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */,
 				AFC7A1F5A6B9C5C153D0CAC6 /* M3UParser.swift in Sources */,
+				5D870D35B72BFB4665F7DC70 /* MirrorProtocol.swift in Sources */,
+				DB972EFD7EE8271184000AEB /* MirrorReceiver.swift in Sources */,
+				F5154E438106C417F33D6CFF /* MirroringSection.swift in Sources */,
 				483272F86059D659E58AD7B6 /* Models.swift in Sources */,
 				4AB579A39D07077F8D1CEBDC /* Net.swift in Sources */,
 				7D6C26FC170D8162F412B072 /* PhonePlayerView.swift in Sources */,
@@ -257,6 +367,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F61B9CF91FA238B0321AD19B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 73143D9EDDBE08B28B32E224 /* ScreenRelay */;
+			targetProxy = B1BE786D414D70F8C89CF282 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		09A2B6296C605A75518FC79B /* Debug */ = {
@@ -278,6 +396,23 @@
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
+		};
+		156F78A92B2118698FF1AA30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = ScreenRelay/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hohnholt.carplaytv.ScreenRelay;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
 		};
 		1721A160C9F776905DB25A97 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -365,6 +500,23 @@
 			};
 			name = Debug;
 		};
+		86B53648201B2B8AF45686DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = ScreenRelay/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hohnholt.carplaytv.ScreenRelay;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		8CB09C039F00C7E04666C92E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -441,6 +593,15 @@
 			buildConfigurations = (
 				09A2B6296C605A75518FC79B /* Debug */,
 				1721A160C9F776905DB25A97 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		90D9A849B302BCF1D6DBFB85 /* Build configuration list for PBXNativeTarget "ScreenRelay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				86B53648201B2B8AF45686DB /* Debug */,
+				156F78A92B2118698FF1AA30 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -13,7 +13,9 @@ targets:
   CarPlayTV:
     type: application
     platform: iOS
-    sources: [CarPlayTV]
+    sources: [CarPlayTV, Shared]
+    dependencies:
+      - target: ScreenRelay
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.hohnholt.carplaytv
@@ -50,3 +52,32 @@ targets:
               - UISceneClassName: CPTemplateApplicationScene
                 UISceneConfigurationName: CarPlay
                 UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlaySceneDelegate
+            # The car display (during CarPlay video) or an AirPlay screen; used for mirroring.
+            UIWindowSceneSessionRoleExternalDisplayNonInteractive:
+              - UISceneClassName: UIWindowScene
+                UISceneConfigurationName: External Display
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).ExternalDisplaySceneDelegate
+            UIWindowSceneSessionRoleExternalDisplay:
+              - UISceneClassName: UIWindowScene
+                UISceneConfigurationName: External Display (legacy)
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).ExternalDisplaySceneDelegate
+  ScreenRelay:
+    type: app-extension
+    platform: iOS
+    sources: [ScreenRelay, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hohnholt.carplaytv.ScreenRelay
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES
+    info:
+      path: ScreenRelay/Info.plist
+      properties:
+        CFBundleDisplayName: Car TV Mirror
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.broadcast-services-upload
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).SampleHandler
+          RPBroadcastProcessMode: RPBroadcastProcessModeSampleBuffer

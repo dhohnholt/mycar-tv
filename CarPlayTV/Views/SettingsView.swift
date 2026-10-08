@@ -18,6 +18,7 @@ struct SettingsView: View {
                 xtreamSection
                 librarySection
                 youTubeSection
+                MirroringSection()
                 Section("Privacy") {
                     Text("Playlists, logins, YouTube tokens and watch history are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
                         .font(.footnote)

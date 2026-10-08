@@ -26,6 +26,9 @@ final class PlayerController: ObservableObject {
 
     private let youtube = YouTubePlayerView()
     private weak var phoneSurface: VideoSurfaceView?
+    /// The external screen (car display or AirPlay screen), when iOS gives the app one. Video plays
+    /// there in preference to the phone.
+    private weak var externalSurface: VideoSurfaceView?
     private var cancellables: Set<AnyCancellable> = []
 
     private init() {
@@ -115,23 +118,33 @@ final class PlayerController: ObservableObject {
         refreshSurface()
     }
 
-    func unregister(_ surface: VideoSurfaceView) {
-        if phoneSurface === surface { phoneSurface = nil }
+    func registerExternal(_ surface: VideoSurfaceView) {
+        externalSurface = surface
         refreshSurface()
     }
 
-    /// The YouTube player is kept alive in a hidden host while the phone player is closed, so its
-    /// audio (and AirPlay video) keeps going.
+    func unregister(_ surface: VideoSurfaceView) {
+        if phoneSurface === surface { phoneSurface = nil }
+        if externalSurface === surface { externalSurface = nil }
+        refreshSurface()
+    }
+
+    /// Shows video on the external screen if there is one, else on the phone player if it's open.
+    /// Otherwise the YouTube player is kept alive in a hidden host so its audio (and AirPlay video)
+    /// keeps going.
     private func refreshSurface() {
-        if case .stream = current {
-            phoneSurface?.playerLayer.player = avPlayer
-        } else {
-            phoneSurface?.playerLayer.player = nil
+        let active = externalSurface ?? phoneSurface
+        for surface in [phoneSurface, externalSurface].compactMap({ $0 }) {
+            if case .stream = current, surface === active {
+                surface.playerLayer.player = avPlayer
+            } else {
+                surface.playerLayer.player = nil
+            }
         }
 
         if case .youtube = current {
-            if let phoneSurface {
-                phoneSurface.embed(youtube)
+            if let active {
+                active.embed(youtube)
             } else {
                 BackgroundHost.shared.embed(youtube)
             }
