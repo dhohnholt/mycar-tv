@@ -11,6 +11,7 @@ final class CarPlayBrowser: NSObject {
     private let library = LibraryStore.shared
     private var cancellables: Set<AnyCancellable> = []
     private var lastSearchText = ""
+    private var playbackButtons: [CPMapButton] = []
 
     private var maxItems: Int { CPListTemplate.maximumItemCount }
 
@@ -39,7 +40,8 @@ final class CarPlayBrowser: NSObject {
             self.setFullScreen(!self.player.carFullScreen, on: map, button: button)
         }
         fullScreen.image = Self.symbol("arrow.up.left.and.arrow.down.right")
-        map.mapButtons = [fullScreen, playPause, stop]
+        playbackButtons = [playPause, stop]
+        map.mapButtons = [fullScreen] + playbackButtons
 
         player.$isPlaying
             .sink { playing in playPause.image = Self.symbol(playing ? "pause.fill" : "play.fill") }
@@ -48,12 +50,13 @@ final class CarPlayBrowser: NSObject {
         return map
     }
 
-    /// Full screen: the video fills the display (cropping any letterbox) and CarPlay hides the bar and
-    /// buttons after a few seconds of no interaction. Tapping the screen brings them back.
+    /// Full screen: the video fills the display (cropping any letterbox), CarPlay hides the top bar after
+    /// a few seconds, and only the exit-full-screen button stays visible as an overlay.
     private func setFullScreen(_ enabled: Bool, on map: CPMapTemplate, button: CPMapButton) {
         player.carFullScreen = enabled
         map.automaticallyHidesNavigationBar = enabled
-        map.hidesButtonsWithNavigationBar = enabled
+        map.hidesButtonsWithNavigationBar = false
+        map.mapButtons = enabled ? [button] : [button] + playbackButtons
         button.image = Self.symbol(enabled ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
     }
 
