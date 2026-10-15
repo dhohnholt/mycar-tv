@@ -19,6 +19,7 @@
 		455724B905FD2913B7F872E8 /* XtreamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604987159990A04D2C63D6AE /* XtreamClient.swift */; };
 		483272F86059D659E58AD7B6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4FF93C7747625AB04800FE /* Models.swift */; };
 		4AB579A39D07077F8D1CEBDC /* Net.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F90C51DF0182E7A4CEBF6A8 /* Net.swift */; };
+		4DF5D5A74C756AF6A5A866C5 /* MirrorHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52444A52F6CE41D8A8F621C /* MirrorHTTPServer.swift */; };
 		54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B343A6DF8D8E694C2F9A66 /* RootView.swift */; };
 		5D870D35B72BFB4665F7DC70 /* MirrorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */; };
 		6FB8A51466481406BE198556 /* CarPlayBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */; };
@@ -31,6 +32,7 @@
 		BB20AD83E33F65D8971A597A /* MirrorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */; };
 		C818C9DC9A5FBF68DAB12B69 /* CarPlayTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E807C6ABB6D1307AB992BF /* CarPlayTVApp.swift */; };
 		C937A9713F2568CAAF5630AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6649990CF76A3FB58A5519AD /* Assets.xcassets */; };
+		CCCF73EA0AD4FB3000FB66FE /* MirrorHLSStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4705049F4837A5E9F9ABE /* MirrorHLSStreamer.swift */; };
 		D6C56BDA361E0459C0CD3DEF /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAA6EA190414398362277F5 /* ImageCache.swift */; };
 		DB972EFD7EE8271184000AEB /* MirrorReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */; };
 		E51E97AF16741D554F374C80 /* YouTubeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310AE09EB77574FADBFAEDBF /* YouTubeViews.swift */; };
@@ -66,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorProtocol.swift; sourceTree = "<group>"; };
+		04A366C3CAB19E6C2C9E39C7 /* CarPlayTV-Audio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarPlayTV-Audio.entitlements"; sourceTree = "<group>"; };
 		0529F85E34801B929F287926 /* ChannelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBrowserView.swift; sourceTree = "<group>"; };
 		0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSurfaceView.swift; sourceTree = "<group>"; };
 		11184180D68028FED0AFB961 /* PhonePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePlayerView.swift; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		20D3CF237BEE1195969BAF1B /* YouTubePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubePlayerView.swift; sourceTree = "<group>"; };
 		2309078DB2AD2DA268A08F75 /* CarPlayTV.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CarPlayTV.entitlements; sourceTree = "<group>"; };
 		2B8B942D8D4402CAAEFC0ABA /* YouTubeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeAPI.swift; sourceTree = "<group>"; };
+		2DE4705049F4837A5E9F9ABE /* MirrorHLSStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorHLSStreamer.swift; sourceTree = "<group>"; };
 		30315DDDDAC855769249CBA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		310AE09EB77574FADBFAEDBF /* YouTubeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeViews.swift; sourceTree = "<group>"; };
 		3D3C08927A893817D3F67209 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
@@ -94,6 +98,7 @@
 		DA3AA0D78D9EB4460C0F3709 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DD4FF93C7747625AB04800FE /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		E21F750E3DBC34F464DF5709 /* MirroringSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirroringSection.swift; sourceTree = "<group>"; };
+		E52444A52F6CE41D8A8F621C /* MirrorHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorHTTPServer.swift; sourceTree = "<group>"; };
 		EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuth.swift; sourceTree = "<group>"; };
 		F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundKeepAlive.swift; sourceTree = "<group>"; };
 		F23B314B2092745DA1DB2900 /* M3UParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3UParser.swift; sourceTree = "<group>"; };
@@ -156,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				6649990CF76A3FB58A5519AD /* Assets.xcassets */,
+				04A366C3CAB19E6C2C9E39C7 /* CarPlayTV-Audio.entitlements */,
 				2309078DB2AD2DA268A08F75 /* CarPlayTV.entitlements */,
 				30315DDDDAC855769249CBA0 /* Info.plist */,
 				1AAF5BE9B31A9F157960B939 /* App */,
@@ -183,6 +189,8 @@
 			children = (
 				F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */,
 				18E01D1460B3125162851CE6 /* ExternalDisplaySceneDelegate.swift */,
+				2DE4705049F4837A5E9F9ABE /* MirrorHLSStreamer.swift */,
+				E52444A52F6CE41D8A8F621C /* MirrorHTTPServer.swift */,
 				B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */,
 			);
 			path = Mirroring;
@@ -346,6 +354,8 @@
 				FEA78472B1C4C5C51051DC15 /* Keychain.swift in Sources */,
 				986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */,
 				AFC7A1F5A6B9C5C153D0CAC6 /* M3UParser.swift in Sources */,
+				CCCF73EA0AD4FB3000FB66FE /* MirrorHLSStreamer.swift in Sources */,
+				4DF5D5A74C756AF6A5A866C5 /* MirrorHTTPServer.swift in Sources */,
 				5D870D35B72BFB4665F7DC70 /* MirrorProtocol.swift in Sources */,
 				DB972EFD7EE8271184000AEB /* MirrorReceiver.swift in Sources */,
 				F5154E438106C417F33D6CFF /* MirroringSection.swift in Sources */,
@@ -380,6 +390,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "CarPlayTV/CarPlayTV-Audio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";
@@ -416,6 +427,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "CarPlayTV/CarPlayTV-Audio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";

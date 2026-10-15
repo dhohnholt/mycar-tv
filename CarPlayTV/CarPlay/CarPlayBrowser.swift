@@ -16,6 +16,7 @@ final class CarPlayBrowser: NSObject {
     private let history = HistoryStore.shared
     private var cancellables: Set<AnyCancellable> = []
     private var lastSearchText = ""
+    private var isMirroring = false
 
     private let tvTab = CPListTemplate(title: "TV", sections: [])
     private let moviesTab = CPListTemplate(title: "Movies", sections: [])
@@ -51,6 +52,14 @@ final class CarPlayBrowser: NSObject {
         history.$items
             .sink { [weak self] items in self?.reloadRecentTab(items) }
             .store(in: &cancellables)
+        MirrorReceiver.shared.$isMirroring
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] mirroring in
+                guard let self else { return }
+                self.isMirroring = mirroring
+                self.reloadChannelTab(.live, groups: self.library.liveGroups)
+            }
+            .store(in: &cancellables)
         GoogleAuth.shared.$isSignedIn
             .sink { [weak self] signedIn in self?.reloadYouTubeTab(signedIn: signedIn) }
             .store(in: &cancellables)
@@ -85,7 +94,14 @@ final class CarPlayBrowser: NSObject {
         }
         tab.emptyViewTitleVariants = [isLoading ? "Loading…" : (kind == .live ? "No channels" : "No movies")]
         tab.emptyViewSubtitleVariants = isLoading ? [] : ["No playlist has been added yet."]
-        tab.updateSections(items.isEmpty ? [] : [CPListSection(items: items)])
+        var sections = items.isEmpty ? [] : [CPListSection(items: items)]
+        if kind == .live, isMirroring {
+            // The screen-mirroring stream, presented as video like any channel.
+            let mirror = CPListSection(items: [playableItem(.stream(PlayerController.mirrorChannel))],
+                                       header: "Screen mirroring", sectionIndexTitle: nil)
+            sections.insert(mirror, at: 0)
+        }
+        tab.updateSections(sections)
     }
 
     private func showChannels(_ group: ChannelGroup) {

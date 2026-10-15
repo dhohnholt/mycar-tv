@@ -11,6 +11,7 @@ struct CarPlayTVApp: App {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         try? AVAudioSession.sharedInstance().setActive(true)
         MirrorReceiver.shared.start()
+        MirrorHTTPServer.shared.start()
     }
 
     var body: some Scene {

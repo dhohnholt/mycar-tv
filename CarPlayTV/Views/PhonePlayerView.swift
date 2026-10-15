@@ -1,3 +1,4 @@
+import AVKit
 import SwiftUI
 
 struct PhonePlayerView: View {
@@ -16,6 +17,9 @@ struct PhonePlayerView: View {
                     .font(.headline)
                     .lineLimit(1)
                 Spacer()
+                AirPlayButton()
+                    .frame(width: 32, height: 32)
+                    .accessibilityLabel("AirPlay")
                 Button { player.togglePlayPause() } label: {
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
                 }
@@ -43,4 +47,16 @@ struct VideoSurface: UIViewRepresentable {
     static func dismantleUIView(_ uiView: VideoSurfaceView, coordinator: ()) {
         PlayerController.shared.unregister(uiView)
     }
+}
+
+/// The system AirPlay picker, for sending the current video to an Apple TV, a Mac, or other receiver.
+private struct AirPlayButton: UIViewRepresentable {
+    func makeUIView(context: Context) -> AVRoutePickerView {
+        let picker = AVRoutePickerView()
+        picker.tintColor = .white
+        picker.prioritizesVideoDevices = true
+        return picker
+    }
+
+    func updateUIView(_ uiView: AVRoutePickerView, context: Context) {}
 }

@@ -32,6 +32,21 @@ final class PlayerController: ObservableObject {
     private weak var externalSurface: VideoSurfaceView?
     private var cancellables: Set<AnyCancellable> = []
 
+    /// The live screen-mirroring stream, played like any channel so it reaches the car display.
+    static let mirrorChannel = Channel(
+        id: "car-tv-mirror",
+        name: "iPhone screen",
+        group: "Screen mirroring",
+        logoURL: nil,
+        streamURL: MirrorHTTPServer.streamURL,
+        kind: .live
+    )
+
+    var isPlayingMirror: Bool {
+        if case .stream(let channel) = current { return channel.id == Self.mirrorChannel.id }
+        return false
+    }
+
     private init() {
         youtube.onStateChange = { [weak self] state in
             self?.isPlaying = state == .playing || state == .buffering
@@ -53,6 +68,34 @@ final class PlayerController: ObservableObject {
             .store(in: &cancellables)
 
         setUpRemoteCommands()
+        observeMirroring()
+    }
+
+    /// In the car, a started broadcast plays automatically (as CarTV does: "cast from any app to watch
+    /// it on the car screen"); when it ends, the mirror stops. The first segments take ~2 s to exist.
+    private func observeMirroring() {
+        MirrorReceiver.shared.$isMirroring
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] mirroring in
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    if mirroring {
+                        guard self.carConnected else { return }
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .seconds(2.5))
+                            if MirrorReceiver.shared.isMirroring, self.carConnected { self.playMirror() }
+                        }
+                    } else if self.isPlayingMirror {
+                        self.stop()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    func playMirror() {
+        play(.stream(Self.mirrorChannel))
     }
 
     // MARK: Playback
@@ -66,10 +109,19 @@ final class PlayerController: ObservableObject {
     func play(_ item: MediaItem) {
         stopPlayback()
         current = item
-        HistoryStore.shared.record(item)
+        let isMirror = isPlayingMirror
+        if !isMirror { HistoryStore.shared.record(item) }
         switch item {
         case .stream(let channel):
-            avPlayer.replaceCurrentItem(with: AVPlayerItem(url: channel.streamURL))
+            let playerItem = AVPlayerItem(url: channel.streamURL)
+            if isMirror {
+                // Stay as close to live as possible; a mirror that lags is worse than one that stutters.
+                playerItem.preferredForwardBufferDuration = 1
+                avPlayer.automaticallyWaitsToMinimizeStalling = false
+            } else {
+                avPlayer.automaticallyWaitsToMinimizeStalling = true
+            }
+            avPlayer.replaceCurrentItem(with: playerItem)
             avPlayer.play()
         case .youtube(let video):
             youtube.load(videoID: video.id, autoplay: true)

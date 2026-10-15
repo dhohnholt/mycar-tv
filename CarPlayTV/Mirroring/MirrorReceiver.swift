@@ -4,9 +4,9 @@ import Network
 import OSLog
 import UIKit
 
-/// Listens on loopback for frames from the ScreenRelay broadcast extension and hands decoded images
-/// to whoever is drawing them (the external display). Loopback only: nothing is reachable from the
-/// network.
+/// Listens on loopback for frames from the ScreenRelay broadcast extension. Decoded frames go to the
+/// live HLS stream (MirrorHLSStreamer, played like any channel so it reaches the car display) and to the
+/// external display, if iOS gives the app one. Loopback only: nothing is reachable from the network.
 final class MirrorReceiver: ObservableObject {
     static let shared = MirrorReceiver()
     private static let log = Logger(subsystem: "com.hohnholt.carplaytv", category: "Mirror")
@@ -101,6 +101,7 @@ final class MirrorReceiver: ObservableObject {
             }
             if let image = Self.decode(data) {
                 Self.log.debug("Mirror frame \(image.width)x\(image.height), \(length) bytes")
+                MirrorHLSStreamer.shared.submit(image)
                 DispatchQueue.main.async { self.onFrame?(image) }
             }
             self.readHeader(on: connection)
@@ -118,7 +119,13 @@ final class MirrorReceiver: ObservableObject {
             guard self.isMirroring != mirroring else { return }
             self.isMirroring = mirroring
             // Car TV must keep running in the background to receive frames while another app is open.
-            if mirroring { BackgroundKeepAlive.shared.start() } else { BackgroundKeepAlive.shared.stop() }
+            if mirroring {
+                BackgroundKeepAlive.shared.start()
+                MirrorHLSStreamer.shared.start()
+            } else {
+                MirrorHLSStreamer.shared.stop()
+                BackgroundKeepAlive.shared.stop()
+            }
         }
     }
 }

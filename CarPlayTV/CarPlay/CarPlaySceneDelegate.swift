@@ -1,8 +1,8 @@
 import CarPlay
 import UIKit
 
-/// CarPlay entry point. As a CarPlay video app, Car TV shows only system templates; iOS presents
-/// the video itself on the car display when the car allows it.
+/// CarPlay entry point. Car TV shows only system templates (it runs as a CarPlay audio or video app);
+/// iOS presents the video itself on the car display when the car allows it.
 final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var interfaceController: CPInterfaceController?
     private var browser: AnyObject?
@@ -17,11 +17,11 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             self.browser = browser
             interfaceController.setRootTemplate(browser.makeRootTemplate(), animated: false, completion: nil)
         } else {
-            // The CarPlay video entitlement only exists on iOS 27; older systems never get here in practice.
-            let info = CPInformationTemplate(title: "Car TV", layout: .leading,
-                                             items: [CPInformationItem(title: "Requires iOS 27", detail: nil)],
-                                             actions: [])
-            interfaceController.setRootTemplate(info, animated: false, completion: nil)
+            // Car TV's CarPlay UI needs iOS 27. As an audio app it can still be listed on older iOS, so show
+            // a plain list (audio apps can't use the information template).
+            let list = CPListTemplate(title: "Car TV", sections: [])
+            list.emptyViewTitleVariants = ["Requires iOS 27"]
+            interfaceController.setRootTemplate(list, animated: false, completion: nil)
         }
 
         // The app may have been launched from the car with the phone UI never shown.

@@ -21,6 +21,15 @@ struct MirroringSection: View {
                 BroadcastPicker()
                     .frame(width: 44, height: 44)
             }
+            if receiver.isMirroring && !player.isPlayingMirror {
+                // For testing on the phone, or sending the mirror to an AirPlay screen. In the car it
+                // starts automatically.
+                Button {
+                    player.start(.stream(PlayerController.mirrorChannel))
+                } label: {
+                    Label("Watch mirror stream", systemImage: "play.rectangle")
+                }
+            }
             DisclosureGroup("How screen sharing works") {
                 Text("1. Connect a compatible external display. A USB CarPlay connection alone does not guarantee video support.")
                 Text("2. Tap the recording button, select Car TV Mirror, then Start Broadcast.")
