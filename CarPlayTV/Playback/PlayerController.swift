@@ -69,6 +69,34 @@ final class PlayerController: ObservableObject {
 
         setUpRemoteCommands()
         observeMirroring()
+        observeDiagnostics()
+    }
+
+    /// Records what the car-video investigation needs: whether video is going out over the external
+    /// route, the stream's status and errors, and its video size.
+    private func observeDiagnostics() {
+        avPlayer.publisher(for: \.isExternalPlaybackActive)
+            .removeDuplicates()
+            .sink { active in Diagnostics.log("External playback active=\(active); audio: \(Diagnostics.describeRoute())") }
+            .store(in: &cancellables)
+        avPlayer.publisher(for: \.currentItem?.status)
+            .compactMap { $0 }
+            .removeDuplicates()
+            .sink { [weak self] status in
+                let name = switch status {
+                case .readyToPlay: "ready"
+                case .failed: "FAILED: \(self?.avPlayer.currentItem?.error?.localizedDescription ?? "unknown")"
+                default: "unknown"
+                }
+                Diagnostics.log("Stream status: \(name)")
+            }
+            .store(in: &cancellables)
+        avPlayer.publisher(for: \.currentItem?.presentationSize)
+            .compactMap { $0 }
+            .filter { $0 != .zero }
+            .removeDuplicates()
+            .sink { size in Diagnostics.log("Stream video size: \(Int(size.width))x\(Int(size.height))") }
+            .store(in: &cancellables)
     }
 
     /// In the car, a started broadcast plays automatically (as CarTV does: "cast from any app to watch
@@ -110,6 +138,11 @@ final class PlayerController: ObservableObject {
         stopPlayback()
         current = item
         let isMirror = isPlayingMirror
+        let kind = switch item {
+        case .stream: isMirror ? "screen mirror" : "TV stream"
+        case .youtube: "YouTube (web player)"
+        }
+        Diagnostics.log("Play \(kind) (car connected=\(carConnected), external playback allowed=\(avPlayer.allowsExternalPlayback))")
         if !isMirror { HistoryStore.shared.record(item) }
         switch item {
         case .stream(let channel):

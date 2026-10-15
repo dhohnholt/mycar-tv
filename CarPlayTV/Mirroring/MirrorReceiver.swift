@@ -64,10 +64,12 @@ final class MirrorReceiver: ObservableObject {
             switch state {
             case .ready:
                 Self.log.info("Mirror broadcast connected")
+                Diagnostics.log("Screen broadcast connected")
                 self.setMirroring(true)
             case .failed, .cancelled:
                 if self.connection === newConnection {
                     Self.log.info("Mirror broadcast disconnected")
+                    Diagnostics.log("Screen broadcast disconnected")
                     self.connection = nil
                     self.setMirroring(false)
                 }

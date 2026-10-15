@@ -10,6 +10,8 @@ final class ExternalDisplaySceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
+        let bounds = windowScene.screen.bounds
+        Diagnostics.log("External screen connected: \(Int(bounds.width))x\(Int(bounds.height)), role=\(session.role.rawValue)")
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = ExternalDisplayViewController()
         window.isHidden = false
@@ -17,6 +19,7 @@ final class ExternalDisplaySceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        Diagnostics.log("External screen disconnected")
         (window?.rootViewController as? ExternalDisplayViewController)?.tearDown()
         window = nil
     }

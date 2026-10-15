@@ -20,6 +20,11 @@ struct SettingsView: View {
                 librarySection
                 youTubeSection
                 MirroringSection()
+                Section {
+                    NavigationLink("Diagnostics") { DiagnosticsView() }
+                } footer: {
+                    Text("A log of what CarPlay reports (car video support, external screen, playback). Useful after a test in the car.")
+                }
                 Section("Privacy") {
                     Text("Playlists, logins, YouTube tokens and watch history are stored only in this iPhone's Keychain and never sync or back up. The app has no analytics or third-party SDKs.")
                         .font(.footnote)
