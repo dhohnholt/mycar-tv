@@ -39,19 +39,19 @@ Notes:
 - Quota is 10,000 units/day. A search costs 100 units, so about 100 searches a day. Browsing lists costs 1 unit per page.
 - Playback uses YouTube's official embedded player, so ads may appear and YouTube Premium perks don't carry over. Some videos block embedding and won't play.
 
-## 2. CarPlay video entitlement (Apple)
+## 2. CarPlay entitlement (Apple)
 
-Car TV is a **CarPlay video app** (`com.apple.developer.carplay-video`, iOS 27+). It uses only system
-templates (tab bar, lists, search, Now Playing). List rows carry a `CPPlaybackConfiguration` with
-`preferredPresentation: .video`, and iOS presents the video on the car display over AirPlay when the car
-allows it (otherwise Now Playing). The app never draws on the car screen itself.
+Car TV is a **CarPlay audio app** (`com.apple.developer.carplay-audio`, granted 2026-10-15). Apple's audio
+type covers "a mixture of audio and video": the app is listed in every CarPlay car, and list rows carry a
+`CPPlaybackConfiguration` with `preferredPresentation: .video`, so iOS presents video on the car display where
+the car supports it (otherwise Now Playing). It uses only system templates and never draws on the car screen.
 
-- Requested from Apple as app type VIDEO, Case-ID 22734816.
+- The video-only type (`carplay-video`, Case-ID 22734816) was also granted, but video apps are hidden in cars
+  without CarPlay video (e.g. the Highlander), and Apple doesn't allow audio and video in one app.
+- On the App ID, **CarPlay Audio App** is enabled and **CarPlay Video App** is not.
 - **Build with Xcode 27** (iOS 27 SDK), e.g. `DEVELOPER_DIR=/Applications/Xcode-27.app/Contents/Developer`.
-- **Simulator:** `CarPlayTV.entitlements` includes the entitlement. Boot an iOS 27 simulator in the classic
-  Simulator app (Xcode 26's, which still has **I/O → External Displays → CarPlay**).
-- **Device / TestFlight:** build 4 enables CarPlay video in `CarPlayTV-Device.entitlements`.
-  Archiving and distribution require an Apple-approved provisioning profile containing this entitlement.
+- **Simulator:** boot an iOS 27 simulator in the classic Simulator app (Xcode 26's, which still has
+  **I/O → External Displays → CarPlay**).
 
 ## 3. TestFlight
 

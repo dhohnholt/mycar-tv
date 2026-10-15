@@ -2,9 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- CarPlay video app (iOS 27+), granted by Apple (Case-ID 22734816). Video-only: Apple doesn't
-	     allow carplay-audio and carplay-video in the same app. -->
-	<key>com.apple.developer.carplay-video</key>
+	<!-- CarPlay audio app, granted by Apple 2026-10-15. Covers "a mixture of audio and video": Car TV is
+	     listed in every CarPlay car and presents video (CPPlaybackConfiguration) where the car supports it.
+	     Video-only apps (carplay-video, also granted) are hidden in cars without CarPlay video, and Apple
+	     doesn't allow both in one app, so don't add carplay-video back. -->
+	<key>com.apple.developer.carplay-audio</key>
 	<true/>
 </dict>
 </plist>

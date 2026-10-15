@@ -68,7 +68,6 @@
 
 /* Begin PBXFileReference section */
 		0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorProtocol.swift; sourceTree = "<group>"; };
-		04A366C3CAB19E6C2C9E39C7 /* CarPlayTV-Audio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarPlayTV-Audio.entitlements"; sourceTree = "<group>"; };
 		0529F85E34801B929F287926 /* ChannelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBrowserView.swift; sourceTree = "<group>"; };
 		0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSurfaceView.swift; sourceTree = "<group>"; };
 		11184180D68028FED0AFB961 /* PhonePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePlayerView.swift; sourceTree = "<group>"; };
@@ -161,7 +160,6 @@
 			isa = PBXGroup;
 			children = (
 				6649990CF76A3FB58A5519AD /* Assets.xcassets */,
-				04A366C3CAB19E6C2C9E39C7 /* CarPlayTV-Audio.entitlements */,
 				2309078DB2AD2DA268A08F75 /* CarPlayTV.entitlements */,
 				30315DDDDAC855769249CBA0 /* Info.plist */,
 				1AAF5BE9B31A9F157960B939 /* App */,
@@ -390,7 +388,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
-				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "CarPlayTV/CarPlayTV-Audio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";
@@ -427,7 +424,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CarPlayTV/CarPlayTV.entitlements;
-				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "CarPlayTV/CarPlayTV-Audio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GOOGLE_CLIENT_ID = "969134369183-bc15tr1kmvn2go8dqba6819jcqqi4762.apps.googleusercontent.com";
@@ -476,7 +472,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6BA6YTBG7Z;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -559,7 +555,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6BA6YTBG7Z;
 				ENABLE_NS_ASSERTIONS = NO;
