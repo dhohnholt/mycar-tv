@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- CarPlay video app (iOS 27+). Works in the Simulator as-is; real devices need Apple to
-	     grant it to the team (requested as app type VIDEO, Case-ID 22734816). -->
+	<!-- CarPlay video app (iOS 27+), granted by Apple (Case-ID 22734816). Video-only: Apple doesn't
+	     allow carplay-audio and carplay-video in the same app. -->
 	<key>com.apple.developer.carplay-video</key>
 	<true/>
 </dict>
