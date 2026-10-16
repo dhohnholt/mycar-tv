@@ -47,6 +47,9 @@ final class Diagnostics: ObservableObject {
         entries.insert(Entry(date: Date(), message: message), at: 0)
         if entries.count > Self.limit { entries.removeLast(entries.count - Self.limit) }
         save()
+        #if DEBUG
+        DebugLogUploader.shared.upload()
+        #endif
     }
 
     private func save() {

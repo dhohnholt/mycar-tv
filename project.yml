@@ -39,6 +39,8 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         UIBackgroundModes: [audio]
         ITSAppUsesNonExemptEncryption: false
+        # Debug builds send Diagnostics to a receiver on the developer's Mac (tools/debug-log-server).
+        NSLocalNetworkUsageDescription: Debug builds send diagnostics to the developer's Mac on your home network.
         NSAppTransportSecurity:
           # Most IPTV providers only serve plain HTTP.
           NSAllowsArbitraryLoads: true

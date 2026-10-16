@@ -5,3 +5,6 @@ xcuserdata/
 
 # Apple documentation (copyrighted, local reference only)
 docs/*.pdf
+tools/debug-log-server/logs.sqlite
+tools/debug-log-server/.token
+CarPlayTV/Debug/DebugLogConfig.swift
