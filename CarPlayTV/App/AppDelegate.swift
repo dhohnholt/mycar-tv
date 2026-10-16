@@ -21,7 +21,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         #if DEBUG
         DebugLogUploader.shared.start()
         #endif
-        discardForeignSessions(application)
+        adoptForeignPhoneScenes()
         return true
     }
 
@@ -44,16 +44,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         return configuration
     }
 
-    /// iOS reuses remembered scene sessions without asking configurationForConnecting again. Sessions
-    /// remembered from the SwiftUI lifecycle still name SwiftUI's handler, so discard them; iOS creates
-    /// fresh ones that are routed above.
-    private func discardForeignSessions(_ application: UIApplication) {
-        let ours: [AnyClass] = [PhoneSceneDelegate.self, CarPlaySceneDelegate.self, ExternalDisplaySceneDelegate.self]
-        for session in application.openSessions {
-            let delegate = session.configuration.delegateClass
-            guard !ours.contains(where: { $0 == delegate }) else { continue }
-            report("Discarding stale scene session: role=\(session.role.rawValue), delegate=\(delegate.map { String(describing: $0) } ?? "nil")")
-            application.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
+    /// iOS restores remembered scene sessions without asking configurationForConnecting again, and won't
+    /// discard the one it's restoring. Phone sessions remembered from the SwiftUI lifecycle still name
+    /// SwiftUI's handler, which no longer draws anything (a black screen). Take those over: give the
+    /// scene our phone delegate and build the UI in it.
+    private func adoptForeignPhoneScenes() {
+        NotificationCenter.default.addObserver(forName: UIScene.willConnectNotification, object: nil, queue: .main) { [weak self] note in
+            MainActor.assumeIsolated {
+                guard let scene = note.object as? UIWindowScene, scene.session.role == .windowApplication,
+                      !(scene.delegate is PhoneSceneDelegate) else { return }
+                self?.report("Adopting phone scene from \(scene.delegate.map { String(describing: type(of: $0)) } ?? "nil")")
+                let delegate = PhoneSceneDelegate()
+                scene.delegate = delegate
+                delegate.setUp(scene)
+            }
         }
     }
 
@@ -70,6 +74,11 @@ final class PhoneSceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
+        setUp(windowScene)
+    }
+
+    func setUp(_ windowScene: UIWindowScene) {
+        guard window == nil else { return }
         let root = RootView()
             .environmentObject(LibraryStore.shared)
             .environmentObject(PlayerController.shared)
