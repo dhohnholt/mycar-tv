@@ -78,7 +78,7 @@ struct PhoneBrowserView: View {
         WebViewContainer(webView: webView)
             .ignoresSafeArea(edges: .bottom)
             .safeAreaInset(edge: .top, spacing: 0) { signInBar }
-            .onAppear { if webView.url != start { webView.load(URLRequest(url: start)) } }
+            .onAppear { page.open(start) }
             .navigationTitle("Web browser")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar) // its own back/forward/home bar sits where the tab bar would
@@ -170,6 +170,26 @@ final class BrowserPage: ObservableObject {
     }
 
     /// YouTube sets these cookies only for a signed-in Google account.
+    /// Opens a start page. Watch Later only exists for a signed-in account (signed out, YouTube says the
+    /// playlist doesn't exist), so go to Google's sign-in first, which returns to Watch Later afterwards.
+    func open(_ start: URL) {
+        Self.isSignedIn { signedIn in
+            self.signedIn = signedIn
+            let target = (start == WebBrowser.watchLater && !signedIn) ? WebBrowser.signIn : start
+            if self.webView.url != target { self.webView.load(URLRequest(url: target)) }
+        }
+    }
+
+    /// Calls back on the main thread with whether the browser is signed in to YouTube.
+    static func isSignedIn(_ completion: @escaping @MainActor (Bool) -> Void) {
+        WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
+            let signedIn = cookies.contains { cookie in
+                cookie.domain.hasSuffix("youtube.com") && ["SAPISID", "__Secure-3PAPISID", "LOGIN_INFO"].contains(cookie.name)
+            }
+            DispatchQueue.main.async { MainActor.assumeIsolated { completion(signedIn) } }
+        }
+    }
+
     func refreshSignIn() {
         WKWebsiteDataStore.default().httpCookieStore.getAllCookies { [weak self] cookies in
             let signedIn = cookies.contains { cookie in
