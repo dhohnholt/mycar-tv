@@ -43,6 +43,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
+        Diagnostics.log("CarPlaySceneDelegate.willConnect: \(type(of: scene)), role=\(session.role.rawValue)")
         // Template scenes are handled by the CPTemplateApplicationSceneDelegate methods.
         guard !(scene is CPTemplateApplicationScene), let windowScene = scene as? UIWindowScene else { return }
         let bounds = windowScene.screen.bounds

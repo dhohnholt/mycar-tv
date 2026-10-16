@@ -47,6 +47,10 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
           UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneClassName: UIWindowScene
+                UISceneConfigurationName: Phone
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).PhoneSceneDelegate
             CPTemplateApplicationSceneSessionRoleApplication:
               - UISceneClassName: CPTemplateApplicationScene
                 UISceneConfigurationName: CarPlay
