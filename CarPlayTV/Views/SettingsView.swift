@@ -21,6 +21,11 @@ struct SettingsView: View {
                 youTubeSection
                 MirroringSection()
                 Section {
+                    NavigationLink("Web browser") { PhoneBrowserView() }
+                } footer: {
+                    Text("Sign in to YouTube here once; the browser on the car screen uses the same sign-in (it opens your Watch Later list).")
+                }
+                Section {
                     NavigationLink("Diagnostics") { DiagnosticsView() }
                 } footer: {
                     Text("A log of what CarPlay reports (car video support, external screen, playback). Useful after a test in the car.")

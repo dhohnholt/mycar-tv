@@ -1,10 +1,15 @@
 import CarPlay
 import UIKit
 
-/// CarPlay entry point. Car TV shows only system templates (it runs as a CarPlay audio app); iOS
-/// presents video on the car display when the car allows it. What the car reports is recorded in
-/// Diagnostics so a test drive can be read back afterwards.
-final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPSessionConfigurationDelegate {
+/// CarPlay entry point. Two ways CarPlay can host Car TV:
+/// - Its own window scene (Car TV has the audio and video entitlements; the Highlander does this):
+///   Car TV draws its own car screen (CarScreenViewController) with video, YouTube and the mirror.
+/// - Apple's template host: system templates only; iOS presents video where the car supports it.
+/// What the car reports is recorded in Diagnostics.
+final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, UIWindowSceneDelegate,
+                                  CPSessionConfigurationDelegate {
+    var window: UIWindow?
+    private var carScreen: CarScreenViewController?
     private var interfaceController: CPInterfaceController?
     private var browser: AnyObject?
     private var sessionConfiguration: CPSessionConfiguration?
@@ -33,6 +38,41 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
                                   from window: CPWindow) {
         disconnect()
     }
+
+    // MARK: Own car scene
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        // Template scenes are handled by the CPTemplateApplicationSceneDelegate methods.
+        guard !(scene is CPTemplateApplicationScene), let windowScene = scene as? UIWindowScene else { return }
+        let bounds = windowScene.screen.bounds
+        Diagnostics.log("Car scene (own window): \(Int(bounds.width))x\(Int(bounds.height)) @\(windowScene.screen.scale)x, role=\(session.role.rawValue)")
+
+        let player = PlayerController.shared
+        player.carHasOwnScreen = true
+        player.carConnected = true
+
+        let controller = CarScreenViewController()
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = controller
+        window.makeKeyAndVisible()
+        self.window = window
+        carScreen = controller
+
+        Task { await LibraryStore.shared.reloadIfEmpty() }
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {
+        guard carScreen != nil else { return }
+        Diagnostics.log("Car scene (own window) disconnected")
+        carScreen?.tearDown()
+        carScreen = nil
+        window = nil
+        PlayerController.shared.carHasOwnScreen = false
+        PlayerController.shared.carConnected = false
+    }
+
+    // MARK: Template scene
 
     private func connect(_ interfaceController: CPInterfaceController, window: CPWindow?,
                          scene: CPTemplateApplicationScene) {

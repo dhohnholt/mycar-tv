@@ -16,6 +16,9 @@ final class PlayerController: ObservableObject {
 
     /// Set by the CarPlay scene. While connected, starting playback doesn't open the phone player.
     @Published var carConnected = false
+    /// True when CarPlay hosts Car TV's own car scene (custom car UI with a video surface), as opposed
+    /// to Apple's template host. Then the mirror is drawn directly and the HLS route isn't needed.
+    @Published var carHasOwnScreen = false
     @Published private(set) var externalDisplayConnected = false
 
     let avPlayer: AVPlayer = {
@@ -109,7 +112,7 @@ final class PlayerController: ObservableObject {
                 MainActor.assumeIsolated {
                     guard let self else { return }
                     if mirroring {
-                        guard self.carConnected else { return }
+                        guard self.carConnected, !self.carHasOwnScreen else { return }
                         Task { @MainActor in
                             try? await Task.sleep(for: .seconds(2.5))
                             if MirrorReceiver.shared.isMirroring, self.carConnected { self.playMirror() }

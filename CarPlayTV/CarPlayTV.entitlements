@@ -8,5 +8,10 @@
 	     doesn't allow both in one app, so don't add carplay-video back. -->
 	<key>com.apple.developer.carplay-audio</key>
 	<true/>
+	<!-- Experiment (2026-10-15): CarTV has audio + video, and CarPlay hosts its car scene directly
+	     (its own window) even in the Highlander, which lacks CarPlay video. Testing whether the video
+	     entitlement is what gives an app that window. Apple says combining both is "not supported". -->
+	<key>com.apple.developer.carplay-video</key>
+	<true/>
 </dict>
 </plist>

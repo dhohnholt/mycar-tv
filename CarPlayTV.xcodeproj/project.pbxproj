@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0331B93719B03E7CE6C3B0DB /* YouTubePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D3CF237BEE1195969BAF1B /* YouTubePlayerView.swift */; };
 		03E07224D7EF89EDB05A64D5 /* YouTubeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8B942D8D4402CAAEFC0ABA /* YouTubeAPI.swift */; };
+		0FC869A4C3D75B33544C58AC /* WebBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBB838981CB4012A846CC7E /* WebBrowser.swift */; };
 		20B65FBFF7A25D64DF83B45E /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E9DADFF1A4D0E4CE2C911 /* DiagnosticsView.swift */; };
 		23BBC956FC99307C0FBE2EA8 /* RecentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F931286660672010F8240E8A /* RecentView.swift */; };
 		29271AD2E2AFFD836A526293 /* GoogleAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA48A90F216A7AD3D41D6F0 /* GoogleAuth.swift */; };
@@ -29,6 +30,7 @@
 		986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601E3F2A3299413F646E0ADF /* LibraryStore.swift */; };
 		9F481CC2D864BBF9F33C884F /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3488A147538D84069B0C56 /* SampleHandler.swift */; };
 		A7F0662C655A6A9927CE4F93 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3C08927A893817D3F67209 /* PlayerController.swift */; };
+		AD7DCB5027D47084342519F0 /* CarScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFD1F1EA18BB22FE32DCC59 /* CarScreen.swift */; };
 		AFC7A1F5A6B9C5C153D0CAC6 /* M3UParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23B314B2092745DA1DB2900 /* M3UParser.swift */; };
 		B66C57B9D8368960B2317285 /* BackgroundKeepAlive.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18E1A818CD3FC60FCC24020 /* BackgroundKeepAlive.swift */; };
 		BB20AD83E33F65D8971A597A /* MirrorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */; };
@@ -73,6 +75,7 @@
 /* Begin PBXFileReference section */
 		0454E16A97AF25690C0EE055 /* MirrorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorProtocol.swift; sourceTree = "<group>"; };
 		0529F85E34801B929F287926 /* ChannelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBrowserView.swift; sourceTree = "<group>"; };
+		0BBB838981CB4012A846CC7E /* WebBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowser.swift; sourceTree = "<group>"; };
 		0D9A7E2170BBE614DFE3037C /* VideoSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSurfaceView.swift; sourceTree = "<group>"; };
 		11184180D68028FED0AFB961 /* PhonePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePlayerView.swift; sourceTree = "<group>"; };
 		18E01D1460B3125162851CE6 /* ExternalDisplaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplaySceneDelegate.swift; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 		310AE09EB77574FADBFAEDBF /* YouTubeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeViews.swift; sourceTree = "<group>"; };
 		3D3C08927A893817D3F67209 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		41778050F300520A5F2B9781 /* DebugLogUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogUploader.swift; sourceTree = "<group>"; };
+		4CFD1F1EA18BB22FE32DCC59 /* CarScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarScreen.swift; sourceTree = "<group>"; };
 		601E3F2A3299413F646E0ADF /* LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStore.swift; sourceTree = "<group>"; };
 		604987159990A04D2C63D6AE /* XtreamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XtreamClient.swift; sourceTree = "<group>"; };
 		61B343A6DF8D8E694C2F9A66 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 			children = (
 				BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */,
 				9AC746E6FE6CE4EAE377DEA1 /* CarPlaySceneDelegate.swift */,
+				4CFD1F1EA18BB22FE32DCC59 /* CarScreen.swift */,
 				FEAA6EA190414398362277F5 /* ImageCache.swift */,
 			);
 			path = CarPlay;
@@ -172,6 +177,7 @@
 				2309078DB2AD2DA268A08F75 /* CarPlayTV.entitlements */,
 				30315DDDDAC855769249CBA0 /* Info.plist */,
 				1AAF5BE9B31A9F157960B939 /* App */,
+				7C02C7D43283C2E6FDF81B4A /* Browser */,
 				0CABE527969E536BE7D5FA6A /* CarPlay */,
 				717F853F3161EE210EC7BA4C /* Debug */,
 				8B662F3F3B974B4BAF5EFA69 /* Library */,
@@ -211,6 +217,14 @@
 				B8B2120DD9C55AD38889C5E7 /* MirrorReceiver.swift */,
 			);
 			path = Mirroring;
+			sourceTree = "<group>";
+		};
+		7C02C7D43283C2E6FDF81B4A /* Browser */ = {
+			isa = PBXGroup;
+			children = (
+				0BBB838981CB4012A846CC7E /* WebBrowser.swift */,
+			);
+			path = Browser;
 			sourceTree = "<group>";
 		};
 		8B662F3F3B974B4BAF5EFA69 /* Library */ = {
@@ -364,6 +378,7 @@
 				6FB8A51466481406BE198556 /* CarPlayBrowser.swift in Sources */,
 				FE4D8FE5E1366F38D7AC6C10 /* CarPlaySceneDelegate.swift in Sources */,
 				C818C9DC9A5FBF68DAB12B69 /* CarPlayTVApp.swift in Sources */,
+				AD7DCB5027D47084342519F0 /* CarScreen.swift in Sources */,
 				397CDCBBDC46E08860F0E155 /* ChannelBrowserView.swift in Sources */,
 				CEE6C4727244320E0C052522 /* DebugLogConfig.swift in Sources */,
 				63F3FDA2170DE1365ACDA155 /* DebugLogUploader.swift in Sources */,
@@ -389,6 +404,7 @@
 				54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */,
 				30A6FA69D8F071493F051C1A /* SettingsView.swift in Sources */,
 				3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */,
+				0FC869A4C3D75B33544C58AC /* WebBrowser.swift in Sources */,
 				455724B905FD2913B7F872E8 /* XtreamClient.swift in Sources */,
 				03E07224D7EF89EDB05A64D5 /* YouTubeAPI.swift in Sources */,
 				0331B93719B03E7CE6C3B0DB /* YouTubePlayerView.swift in Sources */,

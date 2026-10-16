@@ -1,6 +1,7 @@
 import AVFoundation
 import Combine
 import Foundation
+import OSLog
 
 /// A small timestamped log of what CarPlay and the system report (car video support, external screens,
 /// external playback, audio route), shown in Settings so a test drive can be read back without a Mac.
@@ -43,7 +44,11 @@ final class Diagnostics: ObservableObject {
         return entries.map { "\(formatter.string(from: $0.date))  \($0.message)" }.joined(separator: "\n")
     }
 
+    private static let systemLog = Logger(subsystem: "com.hohnholt.carplaytv", category: "Diagnostics")
+
     private func add(_ message: String) {
+        // Also in the system log, readable over USB (idevicesyslog) while the phone is in the car.
+        Self.systemLog.notice("CarTVDiag: \(message, privacy: .public)")
         entries.insert(Entry(date: Date(), message: message), at: 0)
         if entries.count > Self.limit { entries.removeLast(entries.count - Self.limit) }
         save()
