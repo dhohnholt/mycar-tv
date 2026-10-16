@@ -46,6 +46,22 @@ struct YouTubeHomeView: View {
                     List(results) { VideoRow(video: $0) }
                 } else {
                     List {
+                        Section {
+                            NavigationLink { PhoneBrowserView(start: WebBrowser.youTubeHome) } label: {
+                                Label("Home (your recommendations)", systemImage: "house")
+                            }
+                            NavigationLink { PhoneBrowserView(start: WebBrowser.watchLater) } label: {
+                                Label("Watch Later", systemImage: "clock")
+                            }
+                        } footer: {
+                            Text("Opens YouTube's website (sign in once there). Use Play on car to send a video to the car screen.")
+                        }
+                        NavigationLink("Latest from subscriptions") {
+                            VideoListView(title: "Latest from subscriptions") { try await YouTubeAPI.subscriptionFeed() }
+                        }
+                        NavigationLink("Trending") {
+                            VideoListView(title: "Trending") { try await YouTubeAPI.trending() }
+                        }
                         NavigationLink("Liked videos") {
                             VideoListView(title: "Liked videos") { try await YouTubeAPI.liked() }
                         }

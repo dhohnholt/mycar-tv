@@ -46,6 +46,46 @@ enum YouTubeAPI {
         return list.items.map { YouTubePlaylist(id: $0.id, title: $0.snippet.title, thumbnailURL: $0.snippet.thumbnails?.best) }
     }
 
+    /// What's popular in a region right now (1 unit).
+    static func trending(region: String = "US") async throws -> [YouTubeVideo] {
+        let list: ListResponse<VideoItem> = try await get("videos", [
+            "part": "snippet", "chart": "mostPopular", "regionCode": region, "maxResults": "50",
+        ])
+        return list.items.map {
+            YouTubeVideo(id: $0.id, title: $0.snippet.title, channelTitle: $0.snippet.channelTitle, thumbnailURL: $0.snippet.thumbnails.best)
+        }
+    }
+
+    /// Newest uploads across all subscriptions, like YouTube's Subscriptions feed. The API has no feed
+    /// endpoint, so this reads the latest few uploads of each subscribed channel (about 1 unit per channel).
+    static func subscriptionFeed(perChannel: Int = 5, limit: Int = 60) async throws -> [YouTubeVideo] {
+        let channels = try await subscriptions()
+        var dated: [(Date, YouTubeVideo)] = []
+        try await withThrowingTaskGroup(of: [(Date, YouTubeVideo)].self) { group in
+            for channel in channels {
+                group.addTask {
+                    // One channel failing (e.g. no uploads) shouldn't empty the whole feed.
+                    (try? await datedPlaylistVideos(channel.id, max: perChannel)) ?? []
+                }
+            }
+            for try await videos in group { dated.append(contentsOf: videos) }
+        }
+        return dated.sorted { $0.0 > $1.0 }.prefix(limit).map(\.1)
+    }
+
+    private static func datedPlaylistVideos(_ playlistID: String, max: Int) async throws -> [(Date, YouTubeVideo)] {
+        let list: ListResponse<PlaylistItem> = try await get("playlistItems", [
+            "part": "snippet", "playlistId": playlistID, "maxResults": "\(max)",
+        ])
+        let iso = ISO8601DateFormatter()
+        return list.items.compactMap { item in
+            guard let id = item.snippet.resourceId.videoId, item.snippet.thumbnails?.best != nil else { return nil }
+            let date = item.snippet.publishedAt.flatMap(iso.date(from:)) ?? .distantPast
+            return (date, YouTubeVideo(id: id, title: item.snippet.title, channelTitle: item.snippet.videoOwnerChannelTitle ?? "",
+                                       thumbnailURL: item.snippet.thumbnails?.best))
+        }
+    }
+
     static func playlistVideos(_ playlistID: String) async throws -> [YouTubeVideo] {
         let list: ListResponse<PlaylistItem> = try await get("playlistItems", [
             "part": "snippet", "playlistId": playlistID, "maxResults": "50",
@@ -140,6 +180,7 @@ private struct PlaylistItem: Decodable {
         let videoOwnerChannelTitle: String?
         let thumbnails: Thumbnails?
         let resourceId: ResourceID
+        let publishedAt: String?
     }
     let snippet: Snip
 }

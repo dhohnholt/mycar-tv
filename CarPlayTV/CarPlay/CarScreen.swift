@@ -78,9 +78,11 @@ final class CarScreenModel: ObservableObject {
         watch()
     }
 
-    /// Opens the browser full screen. Car TV's own playback stops so the page's video has the audio.
-    func openBrowser() {
+    /// Opens the browser full screen (optionally at a page). Car TV's own playback stops so the page's
+    /// video has the audio.
+    func openBrowser(at url: URL? = nil) {
         if PlayerController.shared.current != nil { PlayerController.shared.stop() }
+        if let url { webView.load(URLRequest(url: url)) }
         showingBrowser = true
     }
 
@@ -322,10 +324,19 @@ private struct CarPageView: View {
                 CarRow(title: channel.name, detail: nil, imageURL: channel.logoURL) { model.play(.stream(channel)) }
             })
         case .youtubeMenu:
+            // Home and Watch Later come from YouTube's website (the API doesn't offer them).
+            let webRows = [
+                CarRow(title: "Home", detail: "Your recommendations (YouTube website)") { model.openBrowser(at: WebBrowser.youTubeHome) },
+                CarRow(title: "Watch Later", detail: "YouTube website") { model.openBrowser(at: WebBrowser.watchLater) },
+            ]
             if !auth.isSignedIn {
-                CarMessage("Not signed in to YouTube")
+                CarList(webRows)
             } else {
-                CarList([
+                CarList(webRows + [
+                    CarRow(title: "Latest from subscriptions", disclosure: true) {
+                        push(.videos("Latest from subscriptions") { try await YouTubeAPI.subscriptionFeed() })
+                    },
+                    CarRow(title: "Trending", disclosure: true) { push(.videos("Trending") { try await YouTubeAPI.trending() }) },
                     CarRow(title: "Liked videos", disclosure: true) { push(.videos("Liked videos") { try await YouTubeAPI.liked() }) },
                     CarRow(title: "Subscriptions", disclosure: true) { push(.playlists("Subscriptions") { try await YouTubeAPI.subscriptions() }) },
                     CarRow(title: "Playlists", disclosure: true) { push(.playlists("Playlists") { try await YouTubeAPI.playlists() }) },
