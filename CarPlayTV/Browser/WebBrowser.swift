@@ -53,7 +53,10 @@ struct WebViewContainer: UIViewRepresentable {
 
 /// Phone browser, mainly for signing in to YouTube so the car browser is signed in too.
 struct PhoneBrowserView: View {
-    @State private var webView = WebBrowser.makeWebView()
+    @StateObject private var page = BrowserPage()
+    @ObservedObject private var player = PlayerController.shared
+
+    private var webView: WKWebView { page.webView }
 
     var body: some View {
         WebViewContainer(webView: webView)
@@ -61,6 +64,17 @@ struct PhoneBrowserView: View {
             .navigationTitle("Web browser")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    // Plays the open YouTube video in Car TV's player: on the car screen when CarPlay is
+                    // connected, otherwise in the phone player.
+                    Button {
+                        page.sendToPlayer()
+                    } label: {
+                        Label(player.carConnected ? "Play on car" : "Play in Car TV", systemImage: player.carConnected ? "car" : "play.rectangle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .disabled(page.videoID == nil)
+                }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button { webView.goBack() } label: { Image(systemName: "chevron.left") }
                     Button { webView.goForward() } label: { Image(systemName: "chevron.right") }
@@ -69,5 +83,50 @@ struct PhoneBrowserView: View {
                     Button { webView.reload() } label: { Image(systemName: "arrow.clockwise") }
                 }
             }
+    }
+}
+
+/// The phone browser's web view plus the YouTube video ID of the page it's on, if any.
+@MainActor
+final class BrowserPage: ObservableObject {
+    let webView = WebBrowser.makeWebView()
+    @Published private(set) var videoID: String?
+    private var observation: NSKeyValueObservation?
+
+    init() {
+        observation = webView.observe(\.url, options: [.initial, .new]) { [weak self] webView, _ in
+            let id = webView.url.flatMap(Self.youTubeVideoID)
+            DispatchQueue.main.async { self?.videoID = id }
+        }
+    }
+
+    func sendToPlayer() {
+        guard let id = videoID else { return }
+        // Stop the page's own copy so only one plays.
+        webView.evaluateJavaScript("document.querySelectorAll('video').forEach(function(v){v.pause()})")
+        let title = (webView.title ?? "").replacingOccurrences(of: " - YouTube", with: "")
+        let video = YouTubeVideo(id: id, title: title.isEmpty ? "YouTube video" : title, channelTitle: "YouTube",
+                                 thumbnailURL: URL(string: "https://i.ytimg.com/vi/\(id)/mqdefault.jpg"))
+        PlayerController.shared.start(.youtube(video))
+    }
+
+    /// youtube.com/watch?v=ID, m.youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID, /live/ID.
+    nonisolated static func youTubeVideoID(from url: URL) -> String? {
+        guard let host = url.host()?.lowercased() else { return nil }
+        let parts = url.pathComponents.filter { $0 != "/" }
+        var candidate: String?
+        if host == "youtu.be" {
+            candidate = parts.first
+        } else if host.hasSuffix("youtube.com") {
+            if parts.first == "watch" {
+                candidate = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                    .queryItems?.first(where: { $0.name == "v" })?.value
+            } else if parts.count >= 2, ["shorts", "live", "embed"].contains(parts[0]) {
+                candidate = parts[1]
+            }
+        }
+        guard let id = candidate, id.count == 11,
+              id.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" }) else { return nil }
+        return id
     }
 }

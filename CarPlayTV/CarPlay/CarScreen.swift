@@ -56,10 +56,18 @@ final class CarScreenModel: ObservableObject {
                 } else if PlayerController.shared.current == nil { self.browsing = true }
             }
             .store(in: &cancellables)
+        // Something started playing (from the car or sent from the phone): show it full screen.
         PlayerController.shared.$current
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] current in
-                if current == nil, !MirrorReceiver.shared.isMirroring { self?.browsing = true }
+                guard let self else { return }
+                if current != nil {
+                    self.showingBrowser = false
+                    self.watch()
+                } else if !MirrorReceiver.shared.isMirroring {
+                    self.browsing = true
+                }
             }
             .store(in: &cancellables)
     }
