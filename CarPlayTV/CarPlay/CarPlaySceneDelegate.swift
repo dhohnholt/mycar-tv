@@ -12,7 +12,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
 
     func templateApplicationScene(_ scene: CPTemplateApplicationScene,
                                   didConnect interfaceController: CPInterfaceController) {
-        connect(interfaceController, window: nil)
+        connect(interfaceController, window: nil, scene: scene)
     }
 
     /// Only navigation apps are documented to get a car window, but CarTV implements this too, so if
@@ -20,7 +20,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     func templateApplicationScene(_ scene: CPTemplateApplicationScene,
                                   didConnect interfaceController: CPInterfaceController,
                                   to window: CPWindow) {
-        connect(interfaceController, window: window)
+        connect(interfaceController, window: window, scene: scene)
     }
 
     func templateApplicationScene(_ scene: CPTemplateApplicationScene,
@@ -34,7 +34,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         disconnect()
     }
 
-    private func connect(_ interfaceController: CPInterfaceController, window: CPWindow?) {
+    private func connect(_ interfaceController: CPInterfaceController, window: CPWindow?,
+                         scene: CPTemplateApplicationScene) {
         self.interfaceController = interfaceController
         PlayerController.shared.carConnected = true
 
@@ -48,10 +49,25 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         report += "; carWindow=\(window.map { "\(Int($0.bounds.width))x\(Int($0.bounds.height))" } ?? "none")"
         Diagnostics.log(report)
 
-        if let window {
+        // Cars without CarPlay video (supportsVideoPlayback=false, e.g. the Highlander) never get video
+        // through the system route. CarTV handles that case with its "own window": every template scene
+        // has a carWindow (documented for navigation apps). Try drawing video and the mirror there.
+        var carWindow = window
+        if carWindow == nil {
+            Diagnostics.log("Checking the scene's car window…")
+            carWindow = scene.carWindow
+        }
+        if let carWindow {
+            Diagnostics.log("Car window: \(Int(carWindow.bounds.width))x\(Int(carWindow.bounds.height)), hidden=\(carWindow.isHidden), screen=\(Int(carWindow.screen.bounds.width))x\(Int(carWindow.screen.bounds.height))")
             let controller = ExternalDisplayViewController()
-            window.rootViewController = controller
+            carWindow.rootViewController = controller
+            carWindow.isHidden = false
             carWindowController = controller
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                Diagnostics.log("Car window after 2 s: \(Int(carWindow.bounds.width))x\(Int(carWindow.bounds.height)), hidden=\(carWindow.isHidden), key=\(carWindow.isKeyWindow), view=\(Int(controller.view.bounds.width))x\(Int(controller.view.bounds.height))")
+            }
+        } else {
+            Diagnostics.log("No car window available")
         }
 
         if #available(iOS 27.0, *) {
