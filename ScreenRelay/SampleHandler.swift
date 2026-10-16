@@ -129,10 +129,19 @@ final class SampleHandler: RPBroadcastSampleHandler {
         lock.unlock()
     }
 
+    /// The rotation that makes a frame upright. ReplayKit reports how the screen is rotated; applying that
+    /// value as-is turned landscape frames (full-screen video) upside down, so the sideways cases are
+    /// swapped to rotate the other way.
     private static func orientation(of sampleBuffer: CMSampleBuffer) -> CGImagePropertyOrientation {
         guard let value = CMGetAttachment(sampleBuffer, key: RPVideoSampleOrientationKey as CFString,
                                           attachmentModeOut: nil) as? NSNumber,
               let orientation = CGImagePropertyOrientation(rawValue: value.uint32Value) else { return .up }
-        return orientation
+        switch orientation {
+        case .left: return .right
+        case .right: return .left
+        case .leftMirrored: return .rightMirrored
+        case .rightMirrored: return .leftMirrored
+        default: return orientation
+        }
     }
 }
