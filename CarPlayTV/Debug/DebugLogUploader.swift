@@ -15,6 +15,7 @@ final class DebugLogUploader {
 
     private var uploaded: Set<UUID>
     private var isUploading = false
+    private var uploadAgain = false
     private var retryTask: Task<Void, Never>?
 
     private let session: URLSession = {
@@ -38,12 +39,19 @@ final class DebugLogUploader {
 
     /// Sends every entry the Mac hasn't confirmed yet. Safe to call often.
     func upload() {
-        guard !isUploading else { return }
+        // An entry added mid-upload is sent right after the current upload finishes.
+        guard !isUploading else { uploadAgain = true; return }
         let pending = Diagnostics.shared.entries.filter { !uploaded.contains($0.id) }
         guard !pending.isEmpty else { return }
         isUploading = true
         Task {
-            defer { isUploading = false }
+            defer {
+                isUploading = false
+                if uploadAgain {
+                    uploadAgain = false
+                    upload()
+                }
+            }
             for host in [DebugLogConfig.host, DebugLogConfig.fallbackIP] {
                 if await send(pending, to: host) {
                     pending.forEach { uploaded.insert($0.id) }
