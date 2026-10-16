@@ -7,9 +7,11 @@ import ReplayKit
 /// downscaled JPEG frames to the Car TV app over loopback, which draws them on the external display.
 /// Frames never leave the phone.
 final class SampleHandler: RPBroadcastSampleHandler {
-    private static let maxDimension: CGFloat = 1280
-    private static let minFrameInterval: CFAbsoluteTime = 1.0 / 20
-    private static let jpegQuality: CGFloat = 0.6
+    // Tuned for latency (the mirrored app's sound plays immediately; only the picture can lag): frames
+    // sized to the car display (~924 px wide in the Highlander), lighter compression, up to 30 fps.
+    private static let maxDimension: CGFloat = 960
+    private static let minFrameInterval: CFAbsoluteTime = 1.0 / 30
+    private static let jpegQuality: CGFloat = 0.5
 
     private let queue = DispatchQueue(label: "com.hohnholt.carplaytv.ScreenRelay")
     private let ciContext = CIContext(options: [.cacheIntermediates: false])
