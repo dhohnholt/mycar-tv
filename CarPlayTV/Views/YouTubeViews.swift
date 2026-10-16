@@ -28,17 +28,17 @@ struct YouTubeHomeView: View {
                 Text("Add your Google OAuth client ID as GOOGLE_CLIENT_ID in project.yml, then rebuild. See the README.")
             }
         } else if !auth.isSignedIn {
-            ContentUnavailableView {
-                Label("Sign in to YouTube", systemImage: "person.crop.circle")
-            } description: {
-                Text("Sign in to browse your subscriptions, playlists and liked videos on the car screen.")
-            } actions: {
-                Button("Sign in with Google") {
-                    Task {
-                        do { try await auth.signIn() } catch { errorMessage = error.localizedDescription }
+            List {
+                webSection
+                Section {
+                    Button("Sign in with Google") {
+                        Task {
+                            do { try await auth.signIn() } catch { errorMessage = error.localizedDescription }
+                        }
                     }
+                } footer: {
+                    Text("Sign in to browse your subscriptions, playlists and liked videos, and to search.")
                 }
-                .buttonStyle(.borderedProminent)
             }
         } else {
             Group {
@@ -46,16 +46,7 @@ struct YouTubeHomeView: View {
                     List(results) { VideoRow(video: $0) }
                 } else {
                     List {
-                        Section {
-                            NavigationLink { PhoneBrowserView(start: WebBrowser.youTubeHome) } label: {
-                                Label("Home (your recommendations)", systemImage: "house")
-                            }
-                            NavigationLink { PhoneBrowserView(start: WebBrowser.watchLater) } label: {
-                                Label("Watch Later", systemImage: "clock")
-                            }
-                        } footer: {
-                            Text("Opens YouTube's website (sign in once there). Use Play on car to send a video to the car screen.")
-                        }
+                        webSection
                         NavigationLink("Latest from subscriptions") {
                             VideoListView(title: "Latest from subscriptions") { try await YouTubeAPI.subscriptionFeed() }
                         }
@@ -83,6 +74,22 @@ struct YouTubeHomeView: View {
             .onChange(of: query) {
                 if query.isEmpty { results = nil }
             }
+        }
+    }
+}
+
+extension YouTubeHomeView {
+    /// Home and Watch Later come from YouTube's website, which needs its own sign-in (in the browser).
+    var webSection: some View {
+        Section {
+            NavigationLink { PhoneBrowserView(start: WebBrowser.youTubeHome) } label: {
+                Label("Home (your recommendations)", systemImage: "house")
+            }
+            NavigationLink { PhoneBrowserView(start: WebBrowser.watchLater) } label: {
+                Label("Watch Later", systemImage: "clock")
+            }
+        } footer: {
+            Text("Opens YouTube's website (sign in once there). Use Play on car to send a video to the car screen.")
         }
     }
 }

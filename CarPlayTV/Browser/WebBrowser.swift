@@ -81,6 +81,7 @@ struct PhoneBrowserView: View {
             .onAppear { if webView.url != start { webView.load(URLRequest(url: start)) } }
             .navigationTitle("Web browser")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .tabBar) // its own back/forward/home bar sits where the tab bar would
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     // Plays the open YouTube video in Car TV's player: on the car screen when CarPlay is
