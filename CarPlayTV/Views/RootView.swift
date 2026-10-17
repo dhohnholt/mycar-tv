@@ -5,12 +5,12 @@ struct RootView: View {
 
     var body: some View {
         TabView {
+            YouTubeHomeView()
+                .tabItem { Label("YouTube", systemImage: "play.rectangle") }
             ChannelBrowserView(kind: .live)
                 .tabItem { Label("TV", systemImage: "tv") }
             ChannelBrowserView(kind: .movie)
                 .tabItem { Label("Movies", systemImage: "film") }
-            YouTubeHomeView()
-                .tabItem { Label("YouTube", systemImage: "play.rectangle") }
             RecentView()
                 .tabItem { Label("Recent", systemImage: "clock.arrow.circlepath") }
             SettingsView()

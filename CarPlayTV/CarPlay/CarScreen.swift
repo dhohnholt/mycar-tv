@@ -182,7 +182,7 @@ private struct CarIconButton: View {
 // MARK: - Browser
 
 private enum CarTab: String, CaseIterable, Identifiable {
-    case tv, movies, youtube, browser, recent, mirror
+    case youtube, tv, movies, browser, recent, mirror
     var id: String { rawValue }
 
     var symbol: String {
@@ -221,7 +221,7 @@ private enum CarPage {
 
 private struct CarBrowseView: View {
     @ObservedObject var model: CarScreenModel
-    @State private var tab: CarTab = .tv
+    @State private var tab: CarTab = .youtube
     @State private var stack: [CarPage] = []
 
     var body: some View {
