@@ -58,8 +58,26 @@ private struct BroadcastPicker: UIViewRepresentable {
             button.accessibilityLabel = "Screen broadcast controls"
             button.accessibilityHint = "Opens Car TV Mirror to start or stop screen sharing."
         }
+        Self.recolor(picker)
         return picker
     }
 
-    func updateUIView(_ uiView: RPSystemBroadcastPickerView, context: Context) {}
+    func updateUIView(_ uiView: RPSystemBroadcastPickerView, context: Context) {
+        Self.recolor(uiView)
+    }
+
+    /// Apple's picker draws a dark icon that disappears on a dark background. Redraw it as a template
+    /// image in the label color: white in dark mode, black in light mode.
+    private static func recolor(_ picker: RPSystemBroadcastPickerView) {
+        picker.tintColor = .label
+        for button in picker.subviews.compactMap({ $0 as? UIButton }) {
+            for state: UIControl.State in [.normal, .highlighted, .selected] {
+                if let image = button.image(for: state), image.renderingMode != .alwaysTemplate {
+                    button.setImage(image.withRenderingMode(.alwaysTemplate), for: state)
+                }
+            }
+            button.tintColor = .label
+            button.imageView?.tintColor = .label
+        }
+    }
 }
