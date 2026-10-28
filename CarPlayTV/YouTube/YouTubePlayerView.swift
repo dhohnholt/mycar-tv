@@ -33,10 +33,10 @@ final class YouTubePlayerView: UIView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    func load(videoID: String, autoplay: Bool) {
+    func load(videoID: String, autoplay: Bool, startAt seconds: Int = 0) {
         // Video IDs are [A-Za-z0-9_-]; reject anything else before it reaches the HTML.
         guard videoID.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" }) else { return }
-        webView.loadHTMLString(Self.html(videoID: videoID, autoplay: autoplay, origin: Self.origin), baseURL: URL(string: Self.origin))
+        webView.loadHTMLString(Self.html(videoID: videoID, autoplay: autoplay, start: max(0, seconds), origin: Self.origin), baseURL: URL(string: Self.origin))
     }
 
     func play() { webView.evaluateJavaScript("player && player.playVideo()") }
@@ -55,7 +55,7 @@ final class YouTubePlayerView: UIView {
     /// YouTube requires embeds to identify themselves; for apps this is an https URL built from the bundle ID.
     private static let origin = "https://\((Bundle.main.bundleIdentifier ?? "carplaytv").lowercased())"
 
-    private static func html(videoID: String, autoplay: Bool, origin: String) -> String {
+    private static func html(videoID: String, autoplay: Bool, start: Int, origin: String) -> String {
         """
         <!doctype html>
         <html><head>
@@ -69,7 +69,7 @@ final class YouTubePlayerView: UIView {
         function onYouTubeIframeAPIReady() {
           player = new YT.Player('p', {
             videoId: '\(videoID)',
-            playerVars: { playsinline: 1, autoplay: \(autoplay ? 1 : 0), rel: 0, origin: '\(origin)' },
+            playerVars: { playsinline: 1, autoplay: \(autoplay ? 1 : 0), rel: 0, start: \(start), origin: '\(origin)' },
             events: {
               onReady: function(e) { if (\(autoplay)) { e.target.playVideo(); } },
               onStateChange: function(e) { window.webkit.messageHandlers.yt.postMessage(e.data); }

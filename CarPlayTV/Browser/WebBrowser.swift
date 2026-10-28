@@ -9,6 +9,18 @@ enum WebBrowser {
     static let watchLater = home
     /// YouTube's personalized home feed (signed in), which the Data API doesn't provide.
     static let youTubeHome = URL(string: "https://m.youtube.com/")!
+    /// Watch history from every device (computer, TV, phone); signed in, YouTube resumes where you stopped.
+    static let history = URL(string: "https://m.youtube.com/feed/history")!
+
+    /// Google sign-in that returns to `next` (a youtube.com path) afterwards.
+    static func signIn(returningTo next: URL) -> URL {
+        var allowed = CharacterSet.alphanumerics
+        allowed.insert(charactersIn: "-._~")
+        let path = next.path + (next.query.map { "?" + $0 } ?? "")
+        let signinURL = "https://www.youtube.com/signin?action_handle_signin=true&app=m&next=" + (path.addingPercentEncoding(withAllowedCharacters: allowed) ?? "/")
+        let continueParam = signinURL.addingPercentEncoding(withAllowedCharacters: allowed) ?? ""
+        return URL(string: "https://accounts.google.com/ServiceLogin?service=youtube&passive=true&hl=en&continue=\(continueParam)")!
+    }
 
     /// Google's sign-in page, going straight back to the Watch Later list afterwards.
     static let signIn = URL(string: "https://accounts.google.com/ServiceLogin?service=youtube&passive=true&hl=en&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Dm%26next%3D%252Fplaylist%253Flist%253DWL")!
@@ -175,7 +187,9 @@ final class BrowserPage: ObservableObject {
     func open(_ start: URL) {
         Self.isSignedIn { signedIn in
             self.signedIn = signedIn
-            let target = (start == WebBrowser.watchLater && !signedIn) ? WebBrowser.signIn : start
+            // Watch Later and History only exist for a signed-in account.
+            let needsAccount = start == WebBrowser.watchLater || start == WebBrowser.history
+            let target = (needsAccount && !signedIn) ? WebBrowser.signIn(returningTo: start) : start
             if self.webView.url != target { self.webView.load(URLRequest(url: target)) }
         }
     }
@@ -210,14 +224,46 @@ final class BrowserPage: ObservableObject {
         }
     }
 
+    /// Plays the open video in Car TV's player from where the page is (YouTube resumes signed-in viewers
+    /// where they stopped, e.g. on a computer), pausing the page's own copy.
     func sendToPlayer() {
         guard let id = videoID else { return }
-        // Stop the page's own copy so only one plays.
-        webView.evaluateJavaScript("document.querySelectorAll('video').forEach(function(v){v.pause()})")
         let title = (webView.title ?? "").replacingOccurrences(of: " - YouTube", with: "")
         let video = YouTubeVideo(id: id, title: title.isEmpty ? "YouTube video" : title, channelTitle: "YouTube",
                                  thumbnailURL: URL(string: "https://i.ytimg.com/vi/\(id)/mqdefault.jpg"))
-        PlayerController.shared.start(.youtube(video))
+        let urlStart = webView.url.flatMap(Self.startSeconds)
+        let script = """
+        (function(){
+          var t = 0;
+          document.querySelectorAll('video').forEach(function(v){ if (v.currentTime > t) t = v.currentTime; v.pause(); });
+          return Math.floor(t);
+        })()
+        """
+        webView.evaluateJavaScript(script) { result, _ in
+            let pageSeconds = (result as? NSNumber)?.intValue ?? 0
+            let start = pageSeconds > 0 ? pageSeconds : (urlStart ?? 0)
+            Diagnostics.log("Play on car: starting at \(start)s")
+            PlayerController.shared.start(.youtube(video), startAt: start)
+        }
+    }
+
+    /// The `t` parameter of a YouTube URL in seconds (t=95, t=95s, t=1m35s).
+    nonisolated static func startSeconds(from url: URL) -> Int? {
+        guard let value = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "t" })?.value else { return nil }
+        if let seconds = Int(value) { return seconds }
+        var total = 0, number = 0
+        for char in value {
+            if let digit = char.wholeNumberValue { number = number * 10 + digit; continue }
+            switch char {
+            case "h": total += number * 3600
+            case "m": total += number * 60
+            case "s": total += number
+            default: return nil
+            }
+            number = 0
+        }
+        return total > 0 ? total : nil
     }
 
     /// youtube.com/watch?v=ID, m.youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID, /live/ID.

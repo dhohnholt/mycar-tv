@@ -85,11 +85,14 @@ extension YouTubeHomeView {
             NavigationLink { PhoneBrowserView(start: WebBrowser.youTubeHome) } label: {
                 Label("Home (your recommendations)", systemImage: "house")
             }
+            NavigationLink { PhoneBrowserView(start: WebBrowser.history) } label: {
+                Label("History (continue watching)", systemImage: "clock.arrow.circlepath")
+            }
             NavigationLink { PhoneBrowserView(start: WebBrowser.watchLater) } label: {
                 Label("Watch Later", systemImage: "clock")
             }
         } footer: {
-            Text("Opens YouTube's website (sign in once there). Use Play on car to send a video to the car screen.")
+            Text("Opens YouTube's website (sign in once there). History includes videos from your computer and TV. Play on car continues from where the video is.")
         }
     }
 }

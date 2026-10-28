@@ -132,12 +132,13 @@ final class PlayerController: ObservableObject {
     // MARK: Playback
 
     /// Starts playback and, when the car isn't connected, opens the phone player.
-    func start(_ item: MediaItem) {
-        play(item)
+    func start(_ item: MediaItem, startAt seconds: Int = 0) {
+        play(item, startAt: seconds)
         if !carConnected { phonePlayerPresented = true }
     }
 
-    func play(_ item: MediaItem) {
+    /// `startAt` (seconds) applies to YouTube videos, e.g. continuing where the website left off.
+    func play(_ item: MediaItem, startAt seconds: Int = 0) {
         stopPlayback()
         current = item
         let isMirror = isPlayingMirror
@@ -160,7 +161,7 @@ final class PlayerController: ObservableObject {
             avPlayer.replaceCurrentItem(with: playerItem)
             avPlayer.play()
         case .youtube(let video):
-            youtube.load(videoID: video.id, autoplay: true)
+            youtube.load(videoID: video.id, autoplay: true, startAt: seconds)
         }
         refreshSurface()
         updateNowPlaying()

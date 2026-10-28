@@ -327,6 +327,7 @@ private struct CarPageView: View {
             // Home and Watch Later come from YouTube's website (the API doesn't offer them).
             let webRows = [
                 CarRow(title: "Home", detail: "Your recommendations (YouTube website)") { model.openBrowser(at: WebBrowser.youTubeHome) },
+                CarRow(title: "History", detail: "Continue watching (YouTube website)") { model.openBrowser(at: WebBrowser.history) },
                 CarRow(title: "Watch Later", detail: "YouTube website") { model.openBrowser(at: WebBrowser.watchLater) },
             ]
             if !auth.isSignedIn {
