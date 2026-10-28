@@ -15,9 +15,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                playlistsSection
-                xtreamSection
-                librarySection
                 youTubeSection
                 MirroringSection()
                 Section {
@@ -25,6 +22,9 @@ struct SettingsView: View {
                 } footer: {
                     Text("Sign in to YouTube here once; the browser on the car screen uses the same sign-in (it opens your Watch Later list).")
                 }
+                playlistsSection
+                xtreamSection
+                librarySection
                 Section {
                     NavigationLink("Diagnostics") { DiagnosticsView() }
                 } footer: {
