@@ -241,8 +241,9 @@ final class BrowserPage: ObservableObject {
         """
         webView.evaluateJavaScript(script) { result, _ in
             let pageSeconds = (result as? NSNumber)?.intValue ?? 0
-            let start = pageSeconds > 0 ? pageSeconds : (urlStart ?? 0)
-            Diagnostics.log("Play on car: starting at \(start)s")
+            // The page's position wins; otherwise the link's time; otherwise Car TV's own saved position.
+            let start = pageSeconds > 0 ? pageSeconds : urlStart
+            Diagnostics.log("Play on car: starting at \(start.map { "\($0)s" } ?? "saved position")")
             PlayerController.shared.start(.youtube(video), startAt: start)
         }
     }

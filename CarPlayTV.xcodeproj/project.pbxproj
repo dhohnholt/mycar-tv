@@ -27,6 +27,7 @@
 		5EFC8DB686E057BDFB959738 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05125E9BD597056D0DDE903E /* AppDelegate.swift */; };
 		63F3FDA2170DE1365ACDA155 /* DebugLogUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41778050F300520A5F2B9781 /* DebugLogUploader.swift */; };
 		6FB8A51466481406BE198556 /* CarPlayBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD10482F8EF466F1C1713AFF /* CarPlayBrowser.swift */; };
+		77EB6E208AC3E9BDDC5A0A92 /* ResumeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0BE76B880B81008A322CF0 /* ResumeStore.swift */; };
 		7D6C26FC170D8162F412B072 /* PhonePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11184180D68028FED0AFB961 /* PhonePlayerView.swift */; };
 		986A6C929FBAA4F3F4C01907 /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601E3F2A3299413F646E0ADF /* LibraryStore.swift */; };
 		9F481CC2D864BBF9F33C884F /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3488A147538D84069B0C56 /* SampleHandler.swift */; };
@@ -98,6 +99,7 @@
 		6CCDC54971E3EB0F7C872F27 /* ScreenRelay.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ScreenRelay.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F90C51DF0182E7A4CEBF6A8 /* Net.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Net.swift; sourceTree = "<group>"; };
 		87AA8E3940BA1025FAAE26C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8F0BE76B880B81008A322CF0 /* ResumeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeStore.swift; sourceTree = "<group>"; };
 		9AC746E6FE6CE4EAE377DEA1 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		9FEF31291D3EEDB3A5AF27A6 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		A6C4C1CAB243F372DE2A8F02 /* DebugLogConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogConfig.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 				F23B314B2092745DA1DB2900 /* M3UParser.swift */,
 				DD4FF93C7747625AB04800FE /* Models.swift */,
 				7F90C51DF0182E7A4CEBF6A8 /* Net.swift */,
+				8F0BE76B880B81008A322CF0 /* ResumeStore.swift */,
 				604987159990A04D2C63D6AE /* XtreamClient.swift */,
 			);
 			path = Library;
@@ -401,6 +404,7 @@
 				7D6C26FC170D8162F412B072 /* PhonePlayerView.swift in Sources */,
 				A7F0662C655A6A9927CE4F93 /* PlayerController.swift in Sources */,
 				23BBC956FC99307C0FBE2EA8 /* RecentView.swift in Sources */,
+				77EB6E208AC3E9BDDC5A0A92 /* ResumeStore.swift in Sources */,
 				54C2C3C433D786669AFC5D61 /* RootView.swift in Sources */,
 				30A6FA69D8F071493F051C1A /* SettingsView.swift in Sources */,
 				3A76ADAA54E866D97B706563 /* VideoSurfaceView.swift in Sources */,

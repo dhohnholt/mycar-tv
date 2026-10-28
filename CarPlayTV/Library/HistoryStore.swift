@@ -25,5 +25,6 @@ final class HistoryStore: ObservableObject {
 
     func clear() {
         items = []
+        ResumeStore.shared.clear()
     }
 }

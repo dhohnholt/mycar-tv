@@ -153,6 +153,12 @@ private struct CarPlayerControls: View {
                         player.togglePlayPause()
                         model.showControls()
                     }
+                    if player.current?.isResumable == true {
+                        CarIconButton(symbol: "backward.end.fill") {
+                            player.startOver()
+                            model.showControls()
+                        }
+                    }
                     CarIconButton(symbol: "stop.fill") { player.stop() }
                 }
             }
@@ -362,7 +368,8 @@ private struct CarPageView: View {
                 CarMessage("Nothing watched yet")
             } else {
                 CarList(history.items.map { item in
-                    CarRow(title: item.title, detail: item.subtitle, imageURL: item.artworkURL) { model.play(item) }
+                    let detail = ResumeStore.shared.position(for: item).map { "Resume at \(formatPlaybackTime($0))" } ?? item.subtitle
+                    return CarRow(title: item.title, detail: detail, imageURL: item.artworkURL) { model.play(item) }
                 })
             }
         case .mirror:

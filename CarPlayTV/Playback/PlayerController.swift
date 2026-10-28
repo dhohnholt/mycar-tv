@@ -73,6 +73,14 @@ final class PlayerController: ObservableObject {
         setUpRemoteCommands()
         observeMirroring()
         observeDiagnostics()
+        startProgressTimer()
+        // Pausing also saves, so a position isn't lost if the app is closed while paused.
+        $isPlaying
+            .dropFirst()
+            .removeDuplicates()
+            .filter { !$0 }
+            .sink { [weak self] _ in MainActor.assumeIsolated { self?.pollProgress(force: true) } }
+            .store(in: &cancellables)
     }
 
     /// Records what the car-video investigation needs: whether video is going out over the external
@@ -132,15 +140,19 @@ final class PlayerController: ObservableObject {
     // MARK: Playback
 
     /// Starts playback and, when the car isn't connected, opens the phone player.
-    func start(_ item: MediaItem, startAt seconds: Int = 0) {
+    func start(_ item: MediaItem, startAt seconds: Int? = nil) {
         play(item, startAt: seconds)
         if !carConnected { phonePlayerPresented = true }
     }
 
-    /// `startAt` (seconds) applies to YouTube videos, e.g. continuing where the website left off.
-    func play(_ item: MediaItem, startAt seconds: Int = 0) {
+    /// Plays from `startAt` seconds when given (e.g. where the YouTube website left off), otherwise from
+    /// where Car TV last stopped this item (YouTube videos and movies), otherwise from the beginning.
+    func play(_ item: MediaItem, startAt requested: Int? = nil) {
+        saveProgress()
         stopPlayback()
         current = item
+        let seconds = requested ?? Int(ResumeStore.shared.position(for: item) ?? 0)
+        if seconds > 0, requested == nil { Diagnostics.log("Resuming at \(seconds)s") }
         let isMirror = isPlayingMirror
         let kind = switch item {
         case .stream: isMirror ? "screen mirror" : "TV stream"
@@ -159,6 +171,9 @@ final class PlayerController: ObservableObject {
                 avPlayer.automaticallyWaitsToMinimizeStalling = true
             }
             avPlayer.replaceCurrentItem(with: playerItem)
+            if seconds > 0 {
+                avPlayer.seek(to: CMTime(seconds: Double(seconds), preferredTimescale: 600))
+            }
             avPlayer.play()
         case .youtube(let video):
             youtube.load(videoID: video.id, autoplay: true, startAt: seconds)
@@ -187,13 +202,68 @@ final class PlayerController: ObservableObject {
         isPlaying ? pause() : resume()
     }
 
+    /// Plays the current item from the beginning and forgets its saved position.
+    func startOver() {
+        guard let item = current else { return }
+        ResumeStore.shared.forget(item)
+        switch item {
+        case .stream: avPlayer.seek(to: .zero)
+        case .youtube: youtube.seek(to: 0)
+        }
+        resume()
+    }
+
     func stop() {
+        saveProgress()
         stopPlayback()
         current = nil
         isPlaying = false
         phonePlayerPresented = false
         refreshSurface()
         updateNowPlaying()
+    }
+
+    // MARK: Resume positions
+
+    /// The last YouTube position seen, since the web player can only be asked asynchronously.
+    private var lastYouTubeProgress: (item: MediaItem, seconds: Double, duration: Double)?
+    private var progressTimer: Timer?
+
+    private func startProgressTimer() {
+        progressTimer?.invalidate()
+        progressTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.pollProgress() }
+        }
+    }
+
+    private func pollProgress(force: Bool = false) {
+        guard let item = current, item.isResumable, isPlaying || force else { return }
+        switch item {
+        case .stream:
+            saveProgress()
+        case .youtube:
+            youtube.progress { [weak self] seconds, duration in
+                MainActor.assumeIsolated {
+                    guard let self, self.current == item else { return }
+                    self.lastYouTubeProgress = (item, seconds, duration)
+                    ResumeStore.shared.update(item, seconds: seconds, duration: duration)
+                }
+            }
+        }
+    }
+
+    /// Saves where the current item is (synchronously for streams; YouTube uses the last poll).
+    private func saveProgress() {
+        guard let item = current, item.isResumable else { return }
+        switch item {
+        case .stream:
+            guard let duration = avPlayer.currentItem?.duration.seconds, duration.isFinite else { return }
+            ResumeStore.shared.update(item, seconds: avPlayer.currentTime().seconds, duration: duration)
+        case .youtube:
+            if let last = lastYouTubeProgress, last.item == item {
+                ResumeStore.shared.update(item, seconds: last.seconds, duration: last.duration)
+            }
+        }
     }
 
     private func stopPlayback() {

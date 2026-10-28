@@ -40,6 +40,19 @@ final class YouTubePlayerView: UIView {
     }
 
     func play() { webView.evaluateJavaScript("player && player.playVideo()") }
+
+    /// Current position and duration in seconds, if the player is ready.
+    func progress(_ completion: @escaping (Double, Double) -> Void) {
+        let script = "(window.player && player.getCurrentTime) ? [player.getCurrentTime(), player.getDuration()] : null"
+        webView.evaluateJavaScript(script) { result, _ in
+            guard let values = result as? [NSNumber], values.count == 2 else { return }
+            completion(values[0].doubleValue, values[1].doubleValue)
+        }
+    }
+
+    func seek(to seconds: Double) {
+        webView.evaluateJavaScript("player && player.seekTo(\(max(0, seconds)), true)")
+    }
     func pause() { webView.evaluateJavaScript("player && player.pauseVideo()") }
 
     func stop() {
