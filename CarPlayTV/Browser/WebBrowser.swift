@@ -33,6 +33,37 @@ enum WebBrowser {
         return "Mozilla/5.0 (iPhone; CPU iPhone OS \(underscored) like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/\(version) Mobile/15E148 Safari/604.1"
     }()
 
+    /// Streaming services' websites, as CarTV's browser lists them. They're plain links: whether a
+    /// service plays in this browser (and on the car screen) is up to the service and its copy protection.
+    struct Site: Identifiable {
+        let name: String
+        let url: URL
+        var id: String { name }
+    }
+
+    static let streamingSites: [Site] = [
+        Site(name: "Disney+", url: URL(string: "https://www.disneyplus.com/")!),
+        Site(name: "Paramount+", url: URL(string: "https://www.paramountplus.com/")!),
+        Site(name: "Netflix", url: URL(string: "https://www.netflix.com/")!),
+        Site(name: "Max", url: URL(string: "https://play.max.com/")!),
+        Site(name: "Hulu", url: URL(string: "https://www.hulu.com/")!),
+        Site(name: "Peacock", url: URL(string: "https://www.peacocktv.com/")!),
+        Site(name: "Prime Video", url: URL(string: "https://www.primevideo.com/")!),
+        Site(name: "PBS Kids", url: URL(string: "https://pbskids.org/video")!),
+        Site(name: "Tubi", url: URL(string: "https://tubitv.com/")!),
+        Site(name: "Pluto TV", url: URL(string: "https://pluto.tv/")!),
+    ]
+
+    /// Streaming sites on a phone mostly say "get the app" instead of playing, so they get the desktop
+    /// site. Google and YouTube keep the iPhone Safari identity (sign-in depends on it).
+    private static let desktopHosts = ["disneyplus.com", "paramountplus.com", "netflix.com", "max.com", "hulu.com",
+                                       "peacocktv.com", "primevideo.com", "amazon.com", "pbskids.org", "tubitv.com", "pluto.tv"]
+
+    nonisolated static func wantsDesktopSite(_ url: URL?) -> Bool {
+        guard let host = url?.host()?.lowercased() else { return false }
+        return desktopHosts.contains { host == $0 || host.hasSuffix("." + $0) }
+    }
+
     /// Google's sign-in opens some steps in new windows; open them in the same view instead of dropping them.
     private static let uiDelegate = SameWindowUIDelegate()
 
@@ -46,6 +77,7 @@ enum WebBrowser {
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.customUserAgent = userAgent
         webView.uiDelegate = uiDelegate
+        webView.navigationDelegate = uiDelegate
         webView.allowsBackForwardNavigationGestures = true
         webView.isOpaque = false
         webView.backgroundColor = .black
@@ -149,14 +181,27 @@ extension PhoneBrowserView {
     }
 }
 
-/// Loads pages that would open a new window (Google sign-in steps, target=_blank links) in the same view.
-final class SameWindowUIDelegate: NSObject, WKUIDelegate {
+/// Loads pages that would open a new window (Google sign-in steps, target=_blank links) in the same view,
+/// and picks the desktop or iPhone site per page.
+final class SameWindowUIDelegate: NSObject, WKUIDelegate, WKNavigationDelegate {
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
                  for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil || navigationAction.targetFrame?.isMainFrame == false {
             webView.load(navigationAction.request)
         }
         return nil
+    }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+                 preferences: WKWebpagePreferences) async -> (WKNavigationActionPolicy, WKWebpagePreferences) {
+        if navigationAction.targetFrame?.isMainFrame ?? true {
+            let desktop = WebBrowser.wantsDesktopSite(navigationAction.request.url)
+            preferences.preferredContentMode = desktop ? .desktop : .mobile
+            // With no custom user agent, WebKit sends its own desktop Safari identity for desktop pages.
+            webView.customUserAgent = desktop ? nil : WebBrowser.userAgent
+            if desktop { Diagnostics.log("Browser: desktop site for \(navigationAction.request.url?.host() ?? "?")") }
+        }
+        return (.allow, preferences)
     }
 }
 

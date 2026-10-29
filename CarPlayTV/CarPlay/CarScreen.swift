@@ -223,6 +223,7 @@ private enum CarPage {
     case playlists(String, () async throws -> [YouTubePlaylist])
     case recent
     case mirror
+    case sites
 }
 
 private struct CarBrowseView: View {
@@ -235,7 +236,6 @@ private struct CarBrowseView: View {
             VStack(spacing: 4) {
                 ForEach(CarTab.allCases) { item in
                     Button {
-                        if item == .browser { return model.openBrowser() }
                         tab = item
                         stack = []
                     } label: {
@@ -264,7 +264,8 @@ private struct CarBrowseView: View {
         switch tab {
         case .tv: .groups(.live)
         case .movies: .groups(.movie)
-        case .youtube, .browser: .youtubeMenu
+        case .youtube: .youtubeMenu
+        case .browser: .sites
         case .recent: .recent
         case .mirror: .mirror
         }
@@ -372,6 +373,11 @@ private struct CarPageView: View {
                     return CarRow(title: item.title, detail: detail, imageURL: item.artworkURL) { model.play(item) }
                 })
             }
+        case .sites:
+            CarList([CarRow(title: "Open browser", detail: model.webView.url?.host() ?? "YouTube Watch Later") { model.openBrowser() }]
+                + WebBrowser.streamingSites.map { site in
+                    CarRow(title: site.name, detail: site.url.host()) { model.openBrowser(at: site.url) }
+                })
         case .mirror:
             if receiver.isMirroring {
                 CarList([CarRow(title: "Show iPhone screen", detail: "Mirroring is on") { model.watch() }])

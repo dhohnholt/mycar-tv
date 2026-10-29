@@ -19,8 +19,13 @@ struct SettingsView: View {
                 MirroringSection()
                 Section {
                     NavigationLink("Web browser") { PhoneBrowserView() }
+                    DisclosureGroup("Streaming sites") {
+                        ForEach(WebBrowser.streamingSites) { site in
+                            NavigationLink(site.name) { PhoneBrowserView(start: site.url) }
+                        }
+                    }
                 } footer: {
-                    Text("Sign in to YouTube here once; the browser on the car screen uses the same sign-in (it opens your Watch Later list).")
+                    Text("Sign in here once; the browser on the car screen uses the same sign-ins (YouTube, and streaming sites under the car's Browser tab). Streaming sites open their desktop versions; some may still refuse to play or show black on the car screen.")
                 }
                 playlistsSection
                 xtreamSection
