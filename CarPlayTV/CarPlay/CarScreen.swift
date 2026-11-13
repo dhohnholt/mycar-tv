@@ -27,6 +27,32 @@ final class CarScreenViewController: UIViewController {
         overlay.view.backgroundColor = .clear
     }
 
+    /// CarPlay's dashboard strip (clock, signal, app icons) sits on the left edge of the car screen
+    /// over the app. Video and controls are laid out in the area beside it so it doesn't cover them.
+    /// The window's safe area is used when CarPlay reports the strip there; otherwise the strip's width
+    /// is estimated (about 12.5% of the screen width, ~100 pt on an 800 pt-wide display).
+    static let estimatedStripFraction: CGFloat = 0.125
+
+    private var loggedInsets = false
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let safe = view.safeAreaInsets
+        let estimate = (view.bounds.width * Self.estimatedStripFraction).rounded()
+        // The strip is on the driver's side; CarPlay reports which side through the safe area.
+        let left = safe.right > safe.left ? 0 : max(safe.left, estimate)
+        let right = safe.right > safe.left ? max(safe.right, estimate) : 0
+        let frame = view.bounds.inset(by: UIEdgeInsets(top: 0, left: left, bottom: 0, right: right))
+        for child in [video, overlay] as [UIViewController] where child.view.frame != frame {
+            child.view.autoresizingMask = []
+            child.view.frame = frame
+        }
+        if !loggedInsets, view.bounds.width > 0 {
+            loggedInsets = true
+            Diagnostics.log("Car screen \(Int(view.bounds.width))x\(Int(view.bounds.height)), safe area L\(Int(safe.left)) R\(Int(safe.right)) T\(Int(safe.top)) B\(Int(safe.bottom)); video area x=\(Int(frame.minX)) w=\(Int(frame.width))")
+        }
+    }
+
     func tearDown() {
         video.tearDown()
     }
@@ -128,9 +154,14 @@ private struct CarOverlayView: View {
                     CarPlayerControls(model: model)
                         .transition(.opacity)
                 }
+                if player.isPreparing {
+                    CarBufferingBanner(progress: player.prepareProgress)
+                        .transition(.opacity)
+                }
             }
         }
         .animation(.easeInOut(duration: 0.2), value: model.controlsVisible)
+        .animation(.easeInOut(duration: 0.3), value: player.isPreparing)
         .preferredColorScheme(.dark)
     }
 }
@@ -167,6 +198,30 @@ private struct CarPlayerControls: View {
             Spacer()
         }
         .foregroundStyle(.white)
+    }
+}
+
+/// Shown while playback waits for a few seconds of buffer before starting, so sound and picture
+/// start in sync in the car.
+private struct CarBufferingBanner: View {
+    let progress: Double
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("Buffering for smooth playback…")
+                .font(.system(size: 14, weight: .semibold))
+            ProgressView(value: min(max(progress, 0), 1))
+                .tint(.white)
+                .frame(width: 200)
+            Text("Tap play to start now")
+                .font(.system(size: 11))
+                .foregroundStyle(.white.opacity(0.6))
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(Color.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
+        .foregroundStyle(.white)
+        .allowsHitTesting(false)
     }
 }
 

@@ -13,6 +13,19 @@ final class PlayerController: ObservableObject {
     @Published private(set) var current: MediaItem?
     @Published private(set) var isPlaying = false
     @Published var phonePlayerPresented = false
+    /// In the car, playback waits for some buffer before starting so sound and picture start in sync
+    /// (starting immediately drifts; pausing and resuming fixes it, so this does that up front).
+    @Published private(set) var isPreparing = false
+    /// 0...1, how far the pre-start buffering is.
+    @Published private(set) var prepareProgress: Double = 0
+
+    /// Seconds of video buffered ahead before playback starts in the car.
+    static let carPrerollSeconds: Double = 8
+    /// Playback starts after at least this long, even when the buffer target is reached sooner, so the
+    /// car's audio route has settled.
+    static let carPrerollMinimumWait: Double = 3
+    /// Playback starts after this long whatever the buffer (slow connections, live streams).
+    static let carPrerollMaximumWait: Double = 10
 
     /// Set by the CarPlay scene. While connected, starting playback doesn't open the phone player.
     @Published var carConnected = false
@@ -53,6 +66,11 @@ final class PlayerController: ObservableObject {
     private init() {
         youtube.onStateChange = { [weak self] state in
             self?.isPlaying = state == .playing || state == .buffering
+        }
+        youtube.onPrerollProgress = { [weak self] progress, done in
+            guard let self, case .youtube = self.current else { return }
+            self.prepareProgress = progress
+            if done { self.finishPreparing() }
         }
 
         avPlayer.publisher(for: \.timeControlStatus)
@@ -154,6 +172,9 @@ final class PlayerController: ObservableObject {
         let seconds = requested ?? Int(ResumeStore.shared.position(for: item) ?? 0)
         if seconds > 0, requested == nil { Diagnostics.log("Resuming at \(seconds)s") }
         let isMirror = isPlayingMirror
+        // Buffer first in the car (not for the mirror, which should stay as close to live as possible).
+        let preroll = carConnected && carHasOwnScreen && !isMirror
+        if preroll { beginPreparing() }
         let kind = switch item {
         case .stream: isMirror ? "screen mirror" : "TV stream"
         case .youtube: "YouTube (web player)"
@@ -174,15 +195,82 @@ final class PlayerController: ObservableObject {
             if seconds > 0 {
                 avPlayer.seek(to: CMTime(seconds: Double(seconds), preferredTimescale: 600))
             }
-            avPlayer.play()
+            if preroll {
+                prerollStream(playerItem)
+            } else {
+                avPlayer.play()
+            }
         case .youtube(let video):
-            youtube.load(videoID: video.id, autoplay: true, startAt: seconds)
+            youtube.load(videoID: video.id, autoplay: true, startAt: seconds,
+                         preroll: preroll ? Self.carPrerollSeconds : 0,
+                         minimumWait: Self.carPrerollMinimumWait,
+                         maximumWait: Self.carPrerollMaximumWait)
         }
         refreshSurface()
         updateNowPlaying()
     }
 
+    // MARK: Pre-start buffering
+
+    private var prerollTask: Task<Void, Never>?
+    private var prerollTimeout: Task<Void, Never>?
+
+    private func beginPreparing() {
+        isPreparing = true
+        prepareProgress = 0
+        isPlaying = false
+        // Never leave the banner up if the player doesn't report back (e.g. a video that won't load).
+        prerollTimeout?.cancel()
+        prerollTimeout = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Self.carPrerollMaximumWait + 10))
+            guard !Task.isCancelled else { return }
+            self?.finishPreparing()
+        }
+    }
+
+    private func finishPreparing() {
+        guard isPreparing else { return }
+        prerollTask?.cancel()
+        prerollTask = nil
+        prerollTimeout?.cancel()
+        prerollTimeout = nil
+        isPreparing = false
+        prepareProgress = 1
+    }
+
+    /// Lets the stream buffer while paused, then plays once enough is loaded (or the wait runs out).
+    private func prerollStream(_ item: AVPlayerItem) {
+        prerollTask?.cancel()
+        prerollTask = Task { [weak self] in
+            let start = Date()
+            while !Task.isCancelled {
+                guard let self, self.avPlayer.currentItem === item else { return }
+                let waited = Date().timeIntervalSince(start)
+                let now = item.currentTime().seconds
+                let ahead = item.loadedTimeRanges
+                    .map(\.timeRangeValue)
+                    .filter { $0.start.seconds <= now + 0.5 && $0.end.seconds > now }
+                    .map { $0.end.seconds - now }
+                    .max() ?? 0
+                let ready = item.status == .readyToPlay
+                self.prepareProgress = min(1, max(ahead / Self.carPrerollSeconds, waited / Self.carPrerollMaximumWait))
+                if item.status == .failed
+                    || (ready && ahead >= Self.carPrerollSeconds && waited >= Self.carPrerollMinimumWait)
+                    || (ready && waited >= Self.carPrerollMaximumWait)
+                    || waited >= Self.carPrerollMaximumWait + 5 {
+                    Diagnostics.log("Pre-buffered \(String(format: "%.1f", ahead))s in \(String(format: "%.1f", waited))s; starting")
+                    self.finishPreparing()
+                    self.avPlayer.play()
+                    return
+                }
+                try? await Task.sleep(for: .milliseconds(250))
+            }
+        }
+    }
+
     func resume() {
+        // Play pressed while buffering: start now.
+        if isPreparing, case .stream = current { finishPreparing() }
         switch current {
         case .stream: avPlayer.play()
         case .youtube: youtube.play()
@@ -191,6 +279,7 @@ final class PlayerController: ObservableObject {
     }
 
     func pause() {
+        finishPreparing()
         switch current {
         case .stream: avPlayer.pause()
         case .youtube: youtube.pause()
@@ -267,6 +356,7 @@ final class PlayerController: ObservableObject {
     }
 
     private func stopPlayback() {
+        finishPreparing()
         avPlayer.replaceCurrentItem(with: nil)
         youtube.stop()
     }
