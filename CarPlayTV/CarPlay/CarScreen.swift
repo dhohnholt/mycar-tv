@@ -135,12 +135,16 @@ private struct CarOverlayView: View {
     @ObservedObject var model: CarScreenModel
     @ObservedObject private var player = PlayerController.shared
     @ObservedObject private var receiver = MirrorReceiver.shared
+    @ObservedObject private var terms = TermsStore.shared
 
     private var hasVideo: Bool { player.current != nil || receiver.isMirroring }
 
     var body: some View {
         ZStack {
-            if model.showingBrowser {
+            if !terms.accepted {
+                // Opaque, so nothing underneath (e.g. a mirrored screen) shows before the user agrees.
+                CarFinishSetupView()
+            } else if model.showingBrowser {
                 CarBrowserScreen(model: model)
             } else if model.browsing || !hasVideo {
                 CarBrowseView(model: model)
@@ -197,6 +201,27 @@ private struct CarPlayerControls: View {
             .background(LinearGradient(colors: [.black.opacity(0.8), .clear], startPoint: .top, endPoint: .bottom))
             Spacer()
         }
+        .foregroundStyle(.white)
+    }
+}
+
+/// Shown on the car screen until the user has agreed to the terms on the phone.
+private struct CarFinishSetupView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "iphone")
+                .font(.system(size: 40, weight: .semibold))
+            Text("Finish setup on your iPhone")
+                .font(.system(size: 20, weight: .bold))
+            Text("Open My Car TV on your iPhone and agree to the terms. Video is for use only while your vehicle is parked.")
+                .font(.system(size: 14))
+                .foregroundStyle(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 420)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
         .foregroundStyle(.white)
     }
 }
@@ -304,6 +329,18 @@ private struct CarBrowseView: View {
                     .accessibilityLabel(item.title)
                 }
                 Spacer(minLength: 0)
+                // Standing reminder: video is for use while parked.
+                VStack(spacing: 1) {
+                    Image(systemName: "parkingsign.circle")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Parked\nonly")
+                        .font(.system(size: 9, weight: .semibold))
+                        .multilineTextAlignment(.center)
+                }
+                .foregroundStyle(Color.white.opacity(0.55))
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("For use only while parked")
+                .padding(.bottom, 4)
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 4)

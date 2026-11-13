@@ -166,6 +166,11 @@ final class PlayerController: ObservableObject {
     /// Plays from `startAt` seconds when given (e.g. where the YouTube website left off), otherwise from
     /// where Car TV last stopped this item (YouTube videos and movies), otherwise from the beginning.
     func play(_ item: MediaItem, startAt requested: Int? = nil) {
+        // Nothing plays until the user has agreed to the terms (watch only while parked).
+        guard TermsStore.shared.accepted else {
+            Diagnostics.log("Play blocked: terms not accepted yet")
+            return
+        }
         saveProgress()
         stopPlayback()
         current = item

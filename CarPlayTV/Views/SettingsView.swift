@@ -42,6 +42,16 @@ struct SettingsView: View {
                     Button("Clear watch history", role: .destructive) { confirmingClearHistory = true }
                         .disabled(history.items.isEmpty)
                 }
+                Section {
+                    Link("Terms of Service", destination: TermsStore.termsURL)
+                    Link("Privacy Policy", destination: TermsStore.privacyURL)
+                } header: {
+                    Text("Legal")
+                } footer: {
+                    if let date = TermsStore.shared.acceptedDate {
+                        Text("You agreed to the terms on \(date.formatted(date: .abbreviated, time: .omitted)). Watch video only while your vehicle is parked.")
+                    }
+                }
             }
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Settings")

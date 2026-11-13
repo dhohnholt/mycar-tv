@@ -2,8 +2,17 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var player: PlayerController
+    @ObservedObject private var terms = TermsStore.shared
 
     var body: some View {
+        if terms.accepted {
+            tabs
+        } else {
+            TermsAgreementView()
+        }
+    }
+
+    private var tabs: some View {
         TabView {
             YouTubeHomeView()
                 .tabItem { Label("YouTube", systemImage: "play.rectangle") }
